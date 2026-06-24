@@ -50,4 +50,12 @@ public class StartGameMenuScreen extends MenuScreen {
         table.row();
         table.add(backButton).spaceBottom(15).uniformX();
     }
+
+    @Override
+    public void onLanguageChanged(I18NBundle bundle) {
+
+        newGameButton.setText(bundle.get("menu.newGame"));
+        loadGameButton.setText(bundle.get("menu.loadGame"));
+        backButton.setText(bundle.get("menu.back"));
+    }
 }

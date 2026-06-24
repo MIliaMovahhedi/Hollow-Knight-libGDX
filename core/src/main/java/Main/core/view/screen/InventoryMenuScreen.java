@@ -34,5 +34,6 @@ public class InventoryMenuScreen extends MenuScreen {
     @Override
     public void onLanguageChanged(I18NBundle bundle) {
 
+        backButton.setText(bundle.get("menu.back"));
     }
 }

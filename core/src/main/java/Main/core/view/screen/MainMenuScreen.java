@@ -73,5 +73,10 @@ public class MainMenuScreen extends MenuScreen {
     @Override
     public void onLanguageChanged(I18NBundle bundle) {
 
+        startGameButton.setText(bundle.get("menu.startGame"));
+        settingsButton.setText(bundle.get("menu.settings"));
+        guideButton.setText(bundle.get("menu.guide"));
+        AchievementButton.setText(bundle.get("menu.achievements"));
+        quitGameButton.setText(bundle.get("menu.quitGame"));
     }
 }

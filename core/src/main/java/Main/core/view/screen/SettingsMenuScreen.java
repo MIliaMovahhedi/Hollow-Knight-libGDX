@@ -44,5 +44,7 @@ public class SettingsMenuScreen extends MenuScreen {
     @Override
     public void onLanguageChanged(I18NBundle bundle) {
 
+        changeLanguageButton.setText(bundle.get("menu.changeLanguage"));
+        backButton.setText(bundle.get("menu.back"));
     }
 }

@@ -54,5 +54,8 @@ public class PauseMenuScreen extends MenuScreen {
     @Override
     public void onLanguageChanged(I18NBundle bundle) {
 
+        resumeButton.setText(bundle.get("menu.resume"));
+        settingsButton.setText(bundle.get("menu.settings"));
+        mainMenuButton.setText(bundle.get("menu.mainMenu"));
     }
 }
