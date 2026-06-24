@@ -1,5 +1,6 @@
 package Main.core.view.screen;
 
+import Main.core.model.LocalizationManager;
 import Main.core.view.Translatable;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -25,6 +26,8 @@ public abstract class MenuScreen implements Screen, Translatable {
         addButtonsAndListeners();
         createTableLayout();
         enableStageInput();
+
+        LocalizationManager.getInstance().register(this);
     }
 
     protected void initializeSkin() {
@@ -80,5 +83,6 @@ public abstract class MenuScreen implements Screen, Translatable {
 
         stage.dispose();
         skin.dispose();
+        LocalizationManager.getInstance().unregister(this);
     }
 }
