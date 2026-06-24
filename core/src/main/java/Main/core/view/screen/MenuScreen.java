@@ -1,5 +1,6 @@
 package Main.core.view.screen;
 
+import Main.core.view.Translatable;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public abstract class MenuScreen implements Screen {
+public abstract class MenuScreen implements Screen, Translatable {
 
     protected Stage stage;
     protected Table table;

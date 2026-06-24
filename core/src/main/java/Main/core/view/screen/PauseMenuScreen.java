@@ -4,6 +4,7 @@ import Main.core.controller.PauseMenuController;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.I18NBundle;
 
 public class PauseMenuScreen extends MenuScreen {
 
@@ -48,5 +49,10 @@ public class PauseMenuScreen extends MenuScreen {
         table.add(settingsButton).spaceBottom(15).uniformX();
         table.row();
         table.add(mainMenuButton).spaceBottom(15).uniformX();
+    }
+
+    @Override
+    public void onLanguageChanged(I18NBundle bundle) {
+
     }
 }

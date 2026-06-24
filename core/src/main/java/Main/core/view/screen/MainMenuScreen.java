@@ -4,6 +4,7 @@ import Main.core.controller.MainMenuController;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.I18NBundle;
 
 public class MainMenuScreen extends MenuScreen {
 
@@ -67,5 +68,10 @@ public class MainMenuScreen extends MenuScreen {
         table.add(AchievementButton).spaceBottom(15).uniformX();
         table.row();
         table.add(quitGameButton).spaceBottom(15).uniformX();
+    }
+
+    @Override
+    public void onLanguageChanged(I18NBundle bundle) {
+
     }
 }

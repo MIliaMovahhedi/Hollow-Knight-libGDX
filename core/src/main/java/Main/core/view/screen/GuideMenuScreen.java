@@ -4,6 +4,7 @@ import Main.core.controller.GuideController;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.I18NBundle;
 
 public class GuideMenuScreen extends MenuScreen {
 
@@ -27,5 +28,10 @@ public class GuideMenuScreen extends MenuScreen {
         });
 
         table.add(backButton).spaceBottom(15).uniformX();
+    }
+
+    @Override
+    public void onLanguageChanged(I18NBundle bundle) {
+
     }
 }
