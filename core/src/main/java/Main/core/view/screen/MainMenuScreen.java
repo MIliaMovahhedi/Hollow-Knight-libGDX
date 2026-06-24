@@ -23,10 +23,10 @@ public class MainMenuScreen extends MenuScreen {
     protected void addButtonsAndListeners() {
 
         startGameButton = new TextButton("Start Game", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
-        TextButton guideButton = new TextButton("Guide", skin);
-        TextButton AchievementButton = new TextButton("Achievement", skin);
-        TextButton quitGameButton = new TextButton("Quit Game", skin);
+        settingsButton = new TextButton("Settings", skin);
+        guideButton = new TextButton("Guide", skin);
+        AchievementButton = new TextButton("Achievement", skin);
+        quitGameButton = new TextButton("Quit Game", skin);
 
         startGameButton.addListener(new ClickListener() {
             @Override
