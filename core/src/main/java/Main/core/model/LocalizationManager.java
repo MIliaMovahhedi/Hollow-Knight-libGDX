@@ -16,7 +16,10 @@ public class LocalizationManager {
     private Language currentLanguage;
 
     private LocalizationManager() {
+
         translatableItems =  new ArrayList<>();
+        currentLanguage = Language.ENGLISH;
+        changeLanguage(currentLanguage);
     }
     public static LocalizationManager getInstance() {
         if (instance == null) {
@@ -30,19 +33,16 @@ public class LocalizationManager {
         if(!translatableItems.contains(translatable)) {
 
             translatableItems.add(translatable);
-        }
 
-        for (Translatable translatableItem : translatableItems ) {
+            if (bundle != null) {
 
-            translatableItem.onLanguageChanged(bundle);
+                translatable.onLanguageChanged(bundle);
+            }
         }
     }
     public void unregister(Translatable translatable) {
 
-        if(translatableItems.contains(translatable)) {
-
-            translatableItems.remove(translatable);
-        }
+        translatableItems.remove(translatable);
     }
     public void changeLanguage(Language newLanguage) {
 
