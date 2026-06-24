@@ -33,11 +33,11 @@ public class LocalizationManager {
         if(!translatableItems.contains(translatable)) {
 
             translatableItems.add(translatable);
+        }
 
-            if (bundle != null) {
+        if (bundle != null) {
 
-                translatable.onLanguageChanged(bundle);
-            }
+            translatable.onLanguageChanged(bundle);
         }
     }
     public void unregister(Translatable translatable) {

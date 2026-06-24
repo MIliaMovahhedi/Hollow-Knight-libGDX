@@ -76,6 +76,7 @@ public abstract class MenuScreen implements Screen, Translatable {
     public void hide() {
 
         Gdx.input.setInputProcessor(null);
+        LocalizationManager.getInstance().unregister(this);
     }
 
     @Override
@@ -83,6 +84,5 @@ public abstract class MenuScreen implements Screen, Translatable {
 
         stage.dispose();
         skin.dispose();
-        LocalizationManager.getInstance().unregister(this);
     }
 }
