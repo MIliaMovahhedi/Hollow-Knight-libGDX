@@ -56,4 +56,8 @@ public class LocalizationManager {
             translatableItem.onLanguageChanged(bundle);
         }
     }
+
+    public Language getCurrentLanguage() {
+        return currentLanguage;
+    }
 }
