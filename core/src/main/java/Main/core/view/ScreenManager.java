@@ -47,6 +47,7 @@ public class ScreenManager {
             case PAUSE_MENU ->     new PauseMenuScreen();
             case INVENTORY_MENU ->     new InventoryMenuScreen();
             case ACHIEVEMENTS_MENU ->     new AchievementsMenuScreen();
+            case GAME_MENU -> new GameScreen();
         };
     }
 }

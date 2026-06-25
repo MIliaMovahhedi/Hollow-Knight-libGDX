@@ -8,5 +8,6 @@ public enum ScreenState {
     GUIDE_MENU,
     ACHIEVEMENTS_MENU,
     PAUSE_MENU,
-    INVENTORY_MENU
+    INVENTORY_MENU,
+    GAME_MENU
 }
