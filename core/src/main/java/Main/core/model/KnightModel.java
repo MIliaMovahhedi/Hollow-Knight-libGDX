@@ -12,6 +12,8 @@ public class KnightModel {
 
     private boolean isGrounded;
     private boolean canDoubleJump;
+    public boolean canDash = true;
+    public boolean isFacingRight = true;
 
     final double GRAVITY = -900.0;
     final double MAX_SPEED = 300.0;
@@ -84,6 +86,7 @@ public class KnightModel {
             yVelocity = 0.0;
             isGrounded = true;
             canDoubleJump = true;
+            canDash = true;
         }
         else {
 

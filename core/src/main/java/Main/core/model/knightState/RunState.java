@@ -24,10 +24,12 @@ public class RunState implements KnightState {
         if (gameController.isOnLeftMove()) {
 
             knight.setXVelocity(-knight.getMaxSpeed());
+            knight.isFacingRight = false;
         }
         if (gameController.isOnRightMove()) {
 
             knight.setXVelocity(knight.getMaxSpeed());
+            knight.isFacingRight = true;
         }
 
         return this;
