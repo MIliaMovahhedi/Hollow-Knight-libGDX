@@ -15,6 +15,7 @@ public class KnightModel {
 
     final double GRAVITY = -900.0;
     final double MAX_SPEED = 300.0;
+    final double MAX_JUMP_SPEED = 600.0;
 
     public KnightState knightState;
 
@@ -28,12 +29,36 @@ public class KnightModel {
     public double getMaxSpeed() {
         return MAX_SPEED;
     }
+    public double getMaxJumpSpeed() {
+        return MAX_JUMP_SPEED;
+    }
+
+    public boolean isGrounded() {
+        return isGrounded;
+    }
+    public void setGrounded(boolean grounded) {
+        isGrounded = grounded;
+    }
+
+    public boolean canDoubleJump() {
+        return canDoubleJump;
+    }
+    public void setCanDoubleJump(boolean canDoubleJump) {
+        this.canDoubleJump = canDoubleJump;
+    }
 
     public void setXVelocity(double xVelocity) {
         this.xVelocity = xVelocity;
     }
     public void setYVelocity(double yVelocity) {
         this.yVelocity = yVelocity;
+    }
+
+    public double getXVelocity() {
+        return xVelocity;
+    }
+    public double getYVelocity() {
+        return yVelocity;
     }
 
     public void setKnightState(KnightState knightState) {

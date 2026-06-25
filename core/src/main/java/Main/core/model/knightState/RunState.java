@@ -16,6 +16,10 @@ public class RunState implements KnightState {
 
             return new IdleState();
         }
+        if (gameController.isOnJump() && knight.isGrounded()) {
+
+            return new JumpState();
+        }
 
         if (gameController.isOnLeftMove()) {
 
