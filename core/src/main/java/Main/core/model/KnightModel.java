@@ -18,6 +18,8 @@ public class KnightModel {
     final double GRAVITY = -900.0;
     final double MAX_SPEED = 300.0;
     final double MAX_JUMP_SPEED = 600.0;
+    final double DASH_SPEED = 800f;
+    final double DASH_DURATION = 0.2f;
 
     public KnightState knightState;
 
