@@ -19,6 +19,9 @@ public class IdleState implements KnightState {
 
             return new RunState();
         }
+        if (gameController.isOnDash() && knight.canDash()) {
+            return new DashState();
+        }
 
         return this;
     }

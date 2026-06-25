@@ -18,12 +18,12 @@ public class JumpState implements KnightState {
         if (gameController.isOnLeftMove()) {
 
             knight.setXVelocity(-knight.getMaxSpeed());
-            knight.isFacingRight = false;
+            knight.setFacingRight(false);
         }
         else if (gameController.isOnRightMove()) {
 
             knight.setXVelocity(-knight.getMaxSpeed());
-            knight.isFacingRight = true;
+            knight.setFacingRight(false);
         }
         else {
 
@@ -34,6 +34,10 @@ public class JumpState implements KnightState {
 
             knight.setCanDoubleJump(false);
             return new JumpState();
+        }
+        if (gameController.isOnDash() && knight.canDash()) {
+
+            return new DashState();
         }
 
         if (knight.isGrounded()) {

@@ -20,16 +20,19 @@ public class RunState implements KnightState {
 
             return new JumpState();
         }
+        if (gameController.isOnDash() && knight.canDash()) {
+            return new DashState();
+        }
 
         if (gameController.isOnLeftMove()) {
 
             knight.setXVelocity(-knight.getMaxSpeed());
-            knight.isFacingRight = false;
+            knight.setFacingRight(false);
         }
         if (gameController.isOnRightMove()) {
 
             knight.setXVelocity(knight.getMaxSpeed());
-            knight.isFacingRight = true;
+            knight.setFacingRight(true);
         }
 
         return this;
