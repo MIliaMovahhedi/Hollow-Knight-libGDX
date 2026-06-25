@@ -58,6 +58,13 @@ public class KnightModel {
         this.canDash = canDash;
     }
 
+    public double getDashDuration() {
+        return DASH_DURATION;
+    }
+    public double getDashSpeed() {
+        return DASH_SPEED;
+    }
+
     public boolean canDoubleJump() {
         return canDoubleJump;
     }
