@@ -12,8 +12,8 @@ public class KnightModel {
 
     private boolean isGrounded;
     private boolean canDoubleJump;
-    public boolean canDash = true;
-    public boolean isFacingRight = true;
+    private boolean canDash = true;
+    private boolean isFacingRight = true;
 
     final double GRAVITY = -900.0;
     final double MAX_SPEED = 300.0;
@@ -40,6 +40,20 @@ public class KnightModel {
     }
     public void setGrounded(boolean grounded) {
         isGrounded = grounded;
+    }
+
+    public boolean isFacingRight() {
+        return isFacingRight;
+    }
+    public void setFacingRight(boolean facingRight) {
+        isFacingRight = facingRight;
+    }
+
+    public boolean canDash() {
+        return canDash;
+    }
+    public void setCanDash(boolean canDash) {
+        this.canDash = canDash;
     }
 
     public boolean canDoubleJump() {
