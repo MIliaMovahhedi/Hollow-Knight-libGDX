@@ -8,6 +8,8 @@ public class KnightModel {
 
     private double x;
     private double y;
+    private double lastSafeX;
+    private double lastSafeY;
     private double xVelocity;
     private double yVelocity;
     private double width;
@@ -168,5 +170,28 @@ public class KnightModel {
             }
         }
         this.y = nextY;
+
+        if (isGrounded) {
+            lastSafeX = this.x;
+            lastSafeY = this.y;
+        }
+
+        for (Rectangle hazard : levelModel.getHazardBounds()) {
+
+            if (bounds.overlaps(hazard)) {
+
+                respawnAtLastSafePlatform();
+                break;
+            }
+        }
+    }
+
+    private void respawnAtLastSafePlatform() {
+        this.x = lastSafeX;
+        this.y = lastSafeY;
+        this.xVelocity = 0;
+        this.yVelocity = 0;
+        bounds.setX((float) x);
+        bounds.setY((float) y);
     }
 }
