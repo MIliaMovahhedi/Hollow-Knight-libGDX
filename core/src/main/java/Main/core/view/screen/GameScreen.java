@@ -1,6 +1,7 @@
 package Main.core.view.screen;
 
 import Main.core.controller.GameController;
+import Main.core.model.KnightModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 public class GameScreen extends MenuScreen {
 
     private GameController controller;
+    private KnightModel knightModel;
 
     private int fixedFrameRate;
     private double fixedDeltaTime;
@@ -15,6 +17,7 @@ public class GameScreen extends MenuScreen {
 
     public GameScreen() {
         this.controller = new GameController();
+        this.knightModel = new KnightModel();
     }
 
     @Override
@@ -44,6 +47,7 @@ public class GameScreen extends MenuScreen {
         while (accumulator >= fixedDeltaTime) {
 
             accumulator -= fixedDeltaTime;
+            knightModel.update(controller, fixedDeltaTime);
         }
     }
 }
