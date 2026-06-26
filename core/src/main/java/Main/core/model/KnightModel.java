@@ -36,6 +36,9 @@ public class KnightModel {
     public double getMaxJumpSpeed() {
         return MAX_JUMP_SPEED;
     }
+    public double getGravity() {
+        return GRAVITY;
+    }
 
     public boolean isGrounded() {
         return isGrounded;
