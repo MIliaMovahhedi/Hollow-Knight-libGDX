@@ -15,6 +15,12 @@ public class KnightModel {
     private double width;
     private double height;
 
+    private int maxHealth;
+    private int currentHealth;
+    private double invincibilityDuration;
+    private double invincibilityTimer;
+    private boolean isInvincible;
+
     private boolean isGrounded;
     private boolean canDoubleJump;
     private boolean canDash = true;
@@ -37,6 +43,12 @@ public class KnightModel {
         this.yVelocity = 0.0;
         this.width = 32.0;
         this.height = 40.0;
+
+        this.maxHealth = 5;
+        this.currentHealth = this.maxHealth;
+        this.invincibilityDuration = 1.0;
+        this.invincibilityTimer = 0.0;
+        this.isInvincible = false;
 
         this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
     }
@@ -105,6 +117,34 @@ public class KnightModel {
         return yVelocity;
     }
 
+    private boolean takeDamage(double damage) {
+
+        if (isInvincible) return true;
+
+        currentHealth -= damage;
+        if (currentHealth <= 0) {
+
+            handleDeath();
+            return false;
+        }
+        else {
+
+            isInvincible = true;
+            invincibilityTimer = invincibilityDuration;
+            return true;
+        }
+    }
+    private void handleDeath() {
+
+        currentHealth = maxHealth;
+        this.x = 100.0;
+        this.y = 100.0;
+        this.xVelocity = 0;
+        this.yVelocity = 0;
+        bounds.setX((float) x);
+        bounds.setY((float) y);
+    }
+
     public void setKnightState(KnightState knightState) {
         this.knightState = knightState;
         knightState.enter(this);
@@ -171,6 +211,16 @@ public class KnightModel {
         }
         this.y = nextY;
 
+        if (isInvincible) {
+
+            invincibilityTimer -= deltaTime;
+            if (invincibilityTimer <= 0) {
+
+                isInvincible = false;
+                invincibilityTimer = 0.0;
+            }
+        }
+
         if (isGrounded) {
             lastSafeX = this.x;
             lastSafeY = this.y;
@@ -180,7 +230,14 @@ public class KnightModel {
 
             if (bounds.overlaps(hazard)) {
 
-                respawnAtLastSafePlatform();
+                if (!isInvincible) {
+
+                    boolean survived = takeDamage(1);
+                    if (survived) {
+
+                        respawnAtLastSafePlatform();
+                    }
+                }
                 break;
             }
         }
