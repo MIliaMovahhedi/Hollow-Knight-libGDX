@@ -7,4 +7,8 @@ public interface KnightState {
 
     void enter(KnightModel knight);
     KnightState update(KnightModel knight, GameController  gameController, double deltaTime);
+    default double getGravityScale() {
+
+        return 1;
+    }
 }
