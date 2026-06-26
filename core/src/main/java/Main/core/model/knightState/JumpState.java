@@ -22,8 +22,8 @@ public class JumpState implements KnightState {
         }
         else if (gameController.isOnRightMove()) {
 
-            knight.setXVelocity(-knight.getMaxSpeed());
-            knight.setFacingRight(false);
+            knight.setXVelocity(knight.getMaxSpeed());
+            knight.setFacingRight(true);
         }
         else {
 

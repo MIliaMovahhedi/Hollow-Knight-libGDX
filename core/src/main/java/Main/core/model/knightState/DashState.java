@@ -34,12 +34,16 @@ public class DashState implements KnightState {
 
             knight.setXVelocity(0.0);
 
-            if (knight.isFacingRight()) {
+            if (knight.isGrounded()) {
+
+                if (gameController.isOnLeftMove() || gameController.isOnRightMove())
+                    return new RunState();
 
                 return new IdleState();
             }
-
-            return new FallState();
+            else {
+                return new FallState();
+            }
         }
 
         return this;
