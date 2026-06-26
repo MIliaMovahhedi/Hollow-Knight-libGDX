@@ -2,6 +2,7 @@ package Main.core.model;
 
 import Main.core.controller.GameController;
 import Main.core.model.knightState.KnightState;
+import com.badlogic.gdx.math.Rectangle;
 
 public class KnightModel {
 
@@ -9,6 +10,8 @@ public class KnightModel {
     private double y;
     private double xVelocity;
     private double yVelocity;
+    private double width;
+    private double height;
 
     private boolean isGrounded;
     private boolean canDoubleJump;
@@ -21,14 +24,25 @@ public class KnightModel {
     final double DASH_SPEED = 800f;
     final double DASH_DURATION = 0.2f;
 
-    public KnightState knightState;
+    private Rectangle bounds;
+
+    private KnightState knightState;
 
     public KnightModel() {
-        this.x = 0.0;
-        this.y = 0.0;
+        this.x = 100.0;
+        this.y = 100.0;
         this.xVelocity = 0.0;
         this.yVelocity = 0.0;
+        this.width = 32.0;
+        this.height = 40.0;
+
+        this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
     }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getWidth() { return width; }
+    public double getHeight() { return height; }
 
     public double getMaxSpeed() {
         return MAX_SPEED;
@@ -93,7 +107,7 @@ public class KnightModel {
         this.knightState = knightState;
         knightState.enter(this);
     }
-    public void update(GameController gameController, double deltaTime) {
+    public void update(GameController gameController, LevelModel levelModel, double deltaTime) {
 
         KnightState newState = this.knightState.update(this, gameController, deltaTime);
 
@@ -104,19 +118,55 @@ public class KnightModel {
 
         yVelocity += GRAVITY * deltaTime;
 
-        this.x += xVelocity * deltaTime;
-        this.y += yVelocity * deltaTime;
+        double nextX = this.x + (xVelocity * deltaTime);
+        bounds.setX((float) nextX);
 
-        if (y <= 0.0) {
-            y = 0.0;
-            yVelocity = 0.0;
-            isGrounded = true;
-            canDoubleJump = true;
-            canDash = true;
-        }
-        else {
+        for (Rectangle rect : levelModel.getGroundBounds()) {
 
-            isGrounded = false;
+            if (bounds.overlaps(rect)) {
+
+                if (xVelocity > 0) {
+
+                    nextX = rect.getX() - bounds.getWidth();
+                }
+                else if (xVelocity < 0) {
+
+                    nextX = rect.getX() + rect.getWidth();
+                }
+
+                xVelocity = 0;
+                bounds.setX((float) nextX);
+                break;
+            }
         }
+        this.x = nextX;
+
+        double nextY = this.y + (yVelocity * deltaTime);
+        bounds.setY((float) nextY);
+
+        isGrounded = false;
+
+        for (Rectangle rect : levelModel.getGroundBounds()) {
+
+            if (bounds.overlaps(rect)) {
+
+                if (yVelocity > 0) {
+
+                    nextY = rect.getY() - bounds.getHeight();
+                    yVelocity = 0;
+                }
+                else if (yVelocity < 0) {
+
+                    nextY = rect.getY() + rect.getHeight();
+                    yVelocity = 0;
+                    isGrounded = true;
+                    canDoubleJump = true;
+                    canDash = true;
+                }
+                bounds.setY((float) nextY);
+                break;
+            }
+        }
+        this.y = nextY;
     }
 }
