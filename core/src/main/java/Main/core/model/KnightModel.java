@@ -50,6 +50,7 @@ public class KnightModel {
         this.invincibilityDuration = 1.0;
         this.invincibilityTimer = 0.0;
         this.isInvincible = false;
+        this.damageAmount = 1.0;
 
         this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
     }
@@ -161,7 +162,7 @@ public class KnightModel {
 
         yVelocity += GRAVITY * deltaTime;
 
-        handelGroundBounds(deltaTime, levelModel);
+        handleGroundBounds(deltaTime, levelModel);
 
         if (isInvincible) {
 
@@ -189,7 +190,7 @@ public class KnightModel {
         bounds.setX((float) x);
         bounds.setY((float) y);
     }
-    private void handelGroundBounds(double deltaTime, LevelModel levelModel) {
+    private void handleGroundBounds(double deltaTime, LevelModel levelModel) {
 
         double nextX = this.x + (xVelocity * deltaTime);
         bounds.setX((float) nextX);
