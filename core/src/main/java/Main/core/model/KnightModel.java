@@ -15,11 +15,12 @@ public class KnightModel {
     private double width;
     private double height;
 
-    private int maxHealth;
-    private int currentHealth;
+    private double maxHealth;
+    private double currentHealth;
     private double invincibilityDuration;
     private double invincibilityTimer;
     private boolean isInvincible;
+    private double damageAmount;
 
     private boolean isGrounded;
     private boolean canDoubleJump;
@@ -117,11 +118,11 @@ public class KnightModel {
         return yVelocity;
     }
 
-    private boolean takeDamage(double damage) {
+    private boolean takeDamage() {
 
         if (isInvincible) return true;
 
-        currentHealth -= damage;
+        currentHealth -= damageAmount;
         if (currentHealth <= 0) {
 
             handleDeath();
@@ -159,6 +160,36 @@ public class KnightModel {
         }
 
         yVelocity += GRAVITY * deltaTime;
+
+        handelGroundBounds(deltaTime, levelModel);
+
+        if (isInvincible) {
+
+            invincibilityTimer -= deltaTime;
+            if (invincibilityTimer <= 0) {
+
+                isInvincible = false;
+                invincibilityTimer = 0.0;
+            }
+        }
+
+        if (isGrounded) {
+            lastSafeX = this.x;
+            lastSafeY = this.y;
+        }
+
+        handleHazardBounds(levelModel);
+    }
+
+    private void respawnAtLastSafePlatform() {
+        this.x = lastSafeX;
+        this.y = lastSafeY;
+        this.xVelocity = 0;
+        this.yVelocity = 0;
+        bounds.setX((float) x);
+        bounds.setY((float) y);
+    }
+    private void handelGroundBounds(double deltaTime, LevelModel levelModel) {
 
         double nextX = this.x + (xVelocity * deltaTime);
         bounds.setX((float) nextX);
@@ -210,21 +241,8 @@ public class KnightModel {
             }
         }
         this.y = nextY;
-
-        if (isInvincible) {
-
-            invincibilityTimer -= deltaTime;
-            if (invincibilityTimer <= 0) {
-
-                isInvincible = false;
-                invincibilityTimer = 0.0;
-            }
-        }
-
-        if (isGrounded) {
-            lastSafeX = this.x;
-            lastSafeY = this.y;
-        }
+    }
+    private void handleHazardBounds(LevelModel levelModel) {
 
         for (Rectangle hazard : levelModel.getHazardBounds()) {
 
@@ -232,7 +250,7 @@ public class KnightModel {
 
                 if (!isInvincible) {
 
-                    boolean survived = takeDamage(1);
+                    boolean survived = takeDamage();
                     if (survived) {
 
                         respawnAtLastSafePlatform();
@@ -241,14 +259,5 @@ public class KnightModel {
                 break;
             }
         }
-    }
-
-    private void respawnAtLastSafePlatform() {
-        this.x = lastSafeX;
-        this.y = lastSafeY;
-        this.xVelocity = 0;
-        this.yVelocity = 0;
-        bounds.setX((float) x);
-        bounds.setY((float) y);
     }
 }
