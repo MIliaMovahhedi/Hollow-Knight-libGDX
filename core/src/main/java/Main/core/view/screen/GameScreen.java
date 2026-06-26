@@ -7,10 +7,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.I18NBundle;
 
@@ -104,5 +106,33 @@ public class GameScreen extends MenuScreen {
             accumulator -= fixedDeltaTime;
             knightModel.update(controller, levelModel, fixedDeltaTime);
         }
+    }
+
+    private void updateCamera(float deltaSeconds) {
+
+        float targetX = (float) knightModel.getX() + (float) (knightModel.getWidth() / 2);
+        float targetY = (float) knightModel.getY() + (float) (knightModel.getHeight() / 2);
+
+        float lerpSpeed = 5.0f;
+        float lerpFactor = Math.min(lerpSpeed * deltaSeconds, 1.0f);
+        camera.position.x += (targetX - camera.position.x) * lerpFactor;
+        camera.position.y += (targetY - camera.position.y) * lerpFactor;
+
+        MapProperties mapProperties = map.getProperties();
+        int mapWidth = mapProperties.get("width", Integer.class);
+        int mapHeight = mapProperties.get("height", Integer.class);
+        int tilePixelWidth = mapProperties.get("tilewidth", Integer.class);
+        int tilePixelHeight = mapProperties.get("tileheight", Integer.class);
+
+        int mapPixelWidth = mapWidth * tilePixelWidth;
+        int mapPixelHeight = mapHeight * tilePixelHeight;
+
+        float cameraHalfWidth = camera.viewportWidth * 0.5f;
+        float cameraHalfHeight = camera.viewportHeight * 0.5f;
+
+        camera.position.x = MathUtils.clamp(camera.position.x, cameraHalfWidth, mapPixelWidth - cameraHalfWidth);
+        camera.position.y = MathUtils.clamp(camera.position.y, cameraHalfHeight, mapPixelHeight - cameraHalfHeight);
+
+        camera.update();
     }
 }
