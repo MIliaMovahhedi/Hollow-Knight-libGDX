@@ -64,6 +64,18 @@ public class GameScreen extends MenuScreen {
                 }
             }
         }
+
+        if (map.getLayers().get("Hazards") != null) {
+
+            for (MapObject object : map.getLayers().get("Hazards").getObjects()) {
+
+                if (object instanceof RectangleMapObject) {
+
+                    Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                    levelModel.addHazardBound(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+                }
+            }
+        }
     }
 
     @Override
