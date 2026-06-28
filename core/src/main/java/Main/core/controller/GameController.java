@@ -14,8 +14,8 @@ public class GameController {
 
         onLeftMove = Gdx.input.isKeyPressed(Input.Keys.LEFT);
         onRightMove = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
-        onJump = Gdx.input.isKeyPressed(Input.Keys.Z);
-        onDash = Gdx.input.isKeyPressed(Input.Keys.C);
+        onJump = Gdx.input.isKeyJustPressed(Input.Keys.Z);
+        onDash = Gdx.input.isKeyJustPressed(Input.Keys.C);
     }
 
     public boolean isOnLeftMove() {

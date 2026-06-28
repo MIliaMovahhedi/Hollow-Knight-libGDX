@@ -9,6 +9,8 @@ public class KnightModel {
 
     private double x;
     private double y;
+    private final double startX;
+    private final double startY;
     private double lastSafeX;
     private double lastSafeY;
     private double xVelocity;
@@ -38,12 +40,14 @@ public class KnightModel {
 
     private KnightState knightState;
 
-    public KnightModel(double spawnX, double spawnY) {
+    public KnightModel(double startX, double startY) {
 
         knightState = new IdleState();
 
-        this.x = spawnX;
-        this.y = spawnY;
+        this.x = startX;
+        this.y = startY;
+        this.startX = startX;
+        this.startY = startY;
         this.xVelocity = 0.0;
         this.yVelocity = 0.0;
         this.width = 32.0;
@@ -194,6 +198,10 @@ public class KnightModel {
         bounds.setX((float) x);
         bounds.setY((float) y);
     }
+    private void respawnAtStart() {
+        this.x = startX;
+        this.y = startY;
+    }
     private void handleGroundBounds(double deltaTime, LevelModel levelModel) {
 
         double nextX = this.x + (xVelocity * deltaTime);
@@ -259,6 +267,10 @@ public class KnightModel {
                     if (survived) {
 
                         respawnAtLastSafePlatform();
+                    }
+                    else {
+
+                        respawnAtStart();
                     }
                 }
                 break;
