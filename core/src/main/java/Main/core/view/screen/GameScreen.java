@@ -6,6 +6,7 @@ import Main.core.model.LevelModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -34,7 +35,6 @@ public class GameScreen extends MenuScreen {
 
     public GameScreen() {
         this.controller = new GameController();
-        this.knightModel = new KnightModel();
     }
 
     @Override
@@ -45,12 +45,23 @@ public class GameScreen extends MenuScreen {
         fixedFrameRate = 120;
         fixedDeltaTime = (double) 1 / fixedFrameRate;
 
-        map = new TmxMapLoader().load("maps/firstMap.tmx");
+        map = new TmxMapLoader().load("maps/Forgotten-Crossroad-Map.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
         levelModel = new LevelModel();
 
+        camera.setToOrtho(false, 1920, 1080);
+
         loadCollisionLayer();
+
+        MapLayer spawnLayer = map.getLayers().get("Spawn");
+
+        MapObject spawnObject = spawnLayer.getObjects().get("PlayerSpawn");
+
+        float startX = spawnObject.getProperties().get("x", Float.class);
+        float startY = spawnObject.getProperties().get("y", Float.class);
+
+        this.knightModel = new KnightModel(startX, startY);
     }
 
     private void loadCollisionLayer() {
@@ -93,8 +104,7 @@ public class GameScreen extends MenuScreen {
 
         controller.update();
 
-        camera.position.set((float) knightModel.getX(), (float) knightModel.getY(), 0);
-        camera.update();
+        updateCamera(deltaSeconds);
 
         mapRenderer.setView(camera);
         mapRenderer.render();

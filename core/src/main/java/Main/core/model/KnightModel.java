@@ -1,6 +1,7 @@
 package Main.core.model;
 
 import Main.core.controller.GameController;
+import Main.core.model.knightState.IdleState;
 import Main.core.model.knightState.KnightState;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -37,9 +38,12 @@ public class KnightModel {
 
     private KnightState knightState;
 
-    public KnightModel() {
-        this.x = 100.0;
-        this.y = 100.0;
+    public KnightModel(double spawnX, double spawnY) {
+
+        knightState = new IdleState();
+
+        this.x = spawnX;
+        this.y = spawnY;
         this.xVelocity = 0.0;
         this.yVelocity = 0.0;
         this.width = 32.0;

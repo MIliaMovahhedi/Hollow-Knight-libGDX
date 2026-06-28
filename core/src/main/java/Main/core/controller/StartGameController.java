@@ -6,7 +6,10 @@ import Main.core.view.screen.MainMenuScreen;
 
 public class StartGameController {
 
-    public void startNewGame() {}
+    public void startNewGame() {
+
+        ScreenManager.getInstance().navigateTo(ScreenState.GAME_MENU);
+    }
     public void loadGame() {}
     public void goBackToMainMenu() {
 
