@@ -3,9 +3,12 @@ package Main.core.view.screen;
 import Main.core.controller.GameController;
 import Main.core.model.KnightModel;
 import Main.core.model.LevelModel;
+import Main.core.view.KnightView;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -28,6 +31,10 @@ public class GameScreen extends MenuScreen {
 
     private GameController controller;
     private KnightModel knightModel;
+
+    private TextureAtlas knightAtlas;
+    private KnightView knightView;
+    private SpriteBatch spriteBatch;
 
     private int fixedFrameRate;
     private double fixedDeltaTime;
@@ -62,6 +69,10 @@ public class GameScreen extends MenuScreen {
         float startY = spawnObject.getProperties().get("y", Float.class);
 
         this.knightModel = new KnightModel(startX, startY);
+
+        spriteBatch = new SpriteBatch();
+        knightAtlas = new TextureAtlas(Gdx.files.internal("animations/knight_atlas/knight.atlas"));
+        knightView = new KnightView(knightModel, knightAtlas);
     }
 
     private void loadCollisionLayer() {
@@ -102,12 +113,21 @@ public class GameScreen extends MenuScreen {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        mapRenderer.setView(camera);
+        mapRenderer.render();
+
         controller.update();
 
         updateCamera(deltaSeconds);
 
         mapRenderer.setView(camera);
         mapRenderer.render();
+
+        spriteBatch.setProjectionMatrix(camera.combined);
+
+        spriteBatch.begin();
+        knightView.render(spriteBatch, deltaSeconds);
+        spriteBatch.end();
 
         accumulator += deltaSeconds;
 

@@ -64,8 +64,8 @@ public class KnightModel {
         this.startY = startY;
         this.xVelocity = 0.0;
         this.yVelocity = 0.0;
-        this.width = 32.0;
-        this.height = 40.0;
+        this.width = 128;
+        this.height = 160;
 
         this.activeSpells = new ArrayList<>();
 
@@ -78,6 +78,10 @@ public class KnightModel {
         this.damageAmount = 1.0;
 
         this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
+    }
+
+    public KnightState getKnightState() {
+        return knightState;
     }
 
     public double getX() { return x; }

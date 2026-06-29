@@ -35,9 +35,13 @@ public class JumpState implements KnightState {
             knight.setCanDoubleJump(false);
             return new JumpState();
         }
-        if (gameController.isOnDash() && knight.canDash()) {
+        else if (gameController.isOnDash() && knight.canDash()) {
 
             return new DashState();
+        }
+        else if (knight.getYVelocity() < 0.0) {
+
+            return new FallState();
         }
 
         if (knight.isGrounded()) {
