@@ -1,6 +1,7 @@
 package Main.core.model;
 
 import Main.core.controller.GameController;
+import Main.core.model.knightState.AttackState;
 import Main.core.model.knightState.IdleState;
 import Main.core.model.knightState.KnightState;
 import com.badlogic.gdx.math.Rectangle;
@@ -20,6 +21,7 @@ public class KnightModel {
 
     private double maxHealth;
     private double currentHealth;
+    private int currentSoul;
     private double invincibilityDuration;
     private double invincibilityTimer;
     private boolean isInvincible;
@@ -30,11 +32,16 @@ public class KnightModel {
     private boolean canDash = true;
     private boolean isFacingRight = true;
 
-    final double GRAVITY = -900.0;
-    final double MAX_SPEED = 300.0;
-    final double MAX_JUMP_SPEED = 600.0;
-    final double DASH_SPEED = 800f;
-    final double DASH_DURATION = 0.2f;
+    private final double GRAVITY = -900.0;
+    private final double MAX_SPEED = 300.0;
+    private final double MAX_JUMP_SPEED = 600.0;
+    private final double DASH_SPEED = 800f;
+    private final double DASH_DURATION = 0.2f;
+    private final int MAX_SOUL = 99;
+    private final int SOUL_PER_HIT = 11;
+    private final int SOUL_PER_ACTION = 33;
+    private final double ATTACK_RANGE = 40.0;
+    private final double POGO_BOUNCE_SPEED = 750.0;
 
     private Rectangle bounds;
 
@@ -55,6 +62,7 @@ public class KnightModel {
 
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
+        this.currentSoul = 0;
         this.invincibilityDuration = 1.0;
         this.invincibilityTimer = 0.0;
         this.isInvincible = false;
@@ -155,11 +163,45 @@ public class KnightModel {
         bounds.setY((float) y);
     }
 
+    public int getCurrentSoul() {
+        return currentSoul;
+    }
+    public double getCurrentHealth() {
+        return currentHealth;
+    }
+    public void addSoul() {
+        currentSoul = Math.min(currentSoul + SOUL_PER_HIT, MAX_SOUL);
+    }
+    public boolean consumeSoul() {
+
+        if (currentSoul >= SOUL_PER_ACTION) {
+
+            currentSoul -= SOUL_PER_ACTION;
+            return true;
+        }
+        return false;
+    }
+    public void heal() {
+
+        if (currentHealth < maxHealth) {
+
+            currentHealth++;
+        }
+    }
+
     public void setKnightState(KnightState knightState) {
         this.knightState = knightState;
         knightState.enter(this);
     }
     public void update(GameController gameController, LevelModel levelModel, double deltaTime) {
+
+        if (gameController.isOnAttack() && !(this.knightState instanceof AttackState)) {
+
+            boolean isDown = gameController.isOnDownMove() && !isGrounded;
+
+            setKnightState(new AttackState(isDown));
+            executeAttack(isDown, levelModel);
+        }
 
         KnightState newState = this.knightState.update(this, gameController, deltaTime);
 
@@ -276,5 +318,50 @@ public class KnightModel {
                 break;
             }
         }
+    }
+
+    private void executeAttack(boolean isDown, LevelModel levelModel) {
+
+        Rectangle attackHitbox;
+
+        if (isDown) {
+
+            attackHitbox = new Rectangle((float) x, (float) (y - ATTACK_RANGE), (float) width, (float) ATTACK_RANGE);
+        }
+        else {
+
+            float hitX = isFacingRight ? (float) (x + width) : (float) (x - ATTACK_RANGE);
+            attackHitbox = new Rectangle(hitX, (float) y, (float) ATTACK_RANGE, (float) height);
+        }
+
+        checkAttackCollisions(attackHitbox, isDown, levelModel);
+    }
+
+    private void checkAttackCollisions(Rectangle attackHitbox, boolean isDown, LevelModel levelModel) {
+
+        boolean hitSuccessful = false;
+
+        for (Rectangle hazard : levelModel.getHazardBounds()) {
+
+            if (attackHitbox.overlaps(hazard)) {
+
+                hitSuccessful = true;
+                if (isDown) {
+
+                    applyPogoBounce();
+                }
+            }
+        }
+
+        if (hitSuccessful) {
+            addSoul();
+        }
+    }
+
+    private void applyPogoBounce() {
+
+        yVelocity = POGO_BOUNCE_SPEED;
+        canDash = true;
+        canDoubleJump = true;
     }
 }
