@@ -11,12 +11,23 @@ public class HowlingWraiths implements Spell {
     private int tickCount;
     private boolean active;
 
-    public HowlingWraiths(double startX, double startY, double knightWidth) {
+    public HowlingWraiths(double startX, double startY, double knightWidth, double knightHeight) {
 
         this.active = true;
         this.timer = 0.0;
         this.tickCount = 0;
-        this.hitbox = new Rectangle((float) (startX - 20), (float) (startY + 40), (float) (knightWidth + 40), 100.0f);
+
+        double spellWidth = knightWidth * 2.25;
+        double spellHeight = knightHeight * 2.5;
+
+        double offsetX = (spellWidth - knightWidth) / 2.0;
+
+        this.hitbox = new Rectangle(
+            (float) (startX - offsetX),
+            (float) (startY + knightHeight),
+            (float) spellWidth,
+            (float) spellHeight
+        );
     }
 
     @Override

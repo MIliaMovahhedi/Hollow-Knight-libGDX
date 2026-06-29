@@ -14,19 +14,21 @@ public class VengefulSpirit implements Spell {
     private boolean active;
     private Rectangle hitbox;
 
-    public VengefulSpirit(double startX, double startY, boolean isFacingRight) {
+    public VengefulSpirit(double startX, double startY, double knightWidth, double knightHeight, boolean isFacingRight) {
 
         this.isFacingRight = isFacingRight;
         this.speed = 800.0;
         this.lifeTimer = 0.0;
         this.active = true;
 
-        double spawnX = isFacingRight ? startX + 32.0 : startX - 40.0;
+        double spellSize = knightHeight;
+
+        double spawnX = isFacingRight ? startX + knightWidth : startX - spellSize;
+
         this.x = spawnX;
         this.y = startY;
-        this.hitbox = new Rectangle((float) x, (float) y, 40.0f, 40.0f);
+        this.hitbox = new Rectangle((float) x, (float) y, (float) spellSize, (float) spellSize);
     }
-
     @Override
     public void update(double deltaTime, LevelModel levelModel) {
 

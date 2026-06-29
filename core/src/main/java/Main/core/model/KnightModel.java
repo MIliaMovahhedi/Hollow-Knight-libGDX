@@ -404,10 +404,10 @@ public class KnightModel {
 
         if (isUpwardCast) {
 
-            activeSpells.add(new HowlingWraiths(x, y, width));
+            activeSpells.add(new HowlingWraiths(x, y, width, height));
         }
         else {
-            activeSpells.add(new VengefulSpirit(x, y, isFacingRight));
+            activeSpells.add(new VengefulSpirit(x, y, width, height, isFacingRight));
         }
     }
 }
