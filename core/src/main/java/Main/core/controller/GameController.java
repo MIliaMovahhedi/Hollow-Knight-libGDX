@@ -9,6 +9,9 @@ public class GameController {
     private boolean onRightMove;
     private boolean onJump;
     private boolean onDash;
+    private boolean onAttack;
+    private boolean onFocus;
+    private boolean onDownMove;
 
     public void update() {
 
@@ -16,6 +19,9 @@ public class GameController {
         onRightMove = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
         onJump = Gdx.input.isKeyJustPressed(Input.Keys.Z);
         onDash = Gdx.input.isKeyJustPressed(Input.Keys.C);
+        onAttack = Gdx.input.isKeyJustPressed(Input.Keys.X);
+        onFocus = Gdx.input.isKeyPressed(Input.Keys.A);
+        onDownMove = Gdx.input.isKeyPressed(Input.Keys.DOWN);
     }
 
     public boolean isOnLeftMove() {
@@ -29,5 +35,14 @@ public class GameController {
     }
     public boolean isOnDash() {
         return onDash;
+    }
+    public boolean isOnAttack() {
+        return onAttack;
+    }
+    public boolean isOnFocus() {
+        return onFocus;
+    }
+    public boolean isOnDownMove() {
+        return onDownMove;
     }
 }
