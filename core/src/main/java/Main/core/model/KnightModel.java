@@ -1,10 +1,15 @@
 package Main.core.model;
 
 import Main.core.controller.GameController;
-import Main.core.model.knightState.AttackState;
-import Main.core.model.knightState.IdleState;
-import Main.core.model.knightState.KnightState;
+import Main.core.model.knightState.*;
+import Main.core.model.spell.HowlingWraiths;
+import Main.core.model.spell.Spell;
+import Main.core.model.spell.VengefulSpirit;
 import com.badlogic.gdx.math.Rectangle;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class KnightModel {
 
@@ -26,6 +31,8 @@ public class KnightModel {
     private double invincibilityTimer;
     private boolean isInvincible;
     private double damageAmount;
+
+    private List<Spell> activeSpells;
 
     private boolean isGrounded;
     private boolean canDoubleJump;
@@ -59,6 +66,8 @@ public class KnightModel {
         this.yVelocity = 0.0;
         this.width = 32.0;
         this.height = 40.0;
+
+        this.activeSpells = new ArrayList<>();
 
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
@@ -169,6 +178,9 @@ public class KnightModel {
     public double getCurrentHealth() {
         return currentHealth;
     }
+    public double getMaxHealth() {
+        return maxHealth;
+    }
     public void addSoul() {
         currentSoul = Math.min(currentSoul + SOUL_PER_HIT, MAX_SOUL);
     }
@@ -202,6 +214,19 @@ public class KnightModel {
             setKnightState(new AttackState(isDown));
             executeAttack(isDown, levelModel);
         }
+        else if (gameController.isOnFocus() && isGrounded && !(knightState instanceof FocusState)) {
+
+            setKnightState(new FocusState());
+        }
+        else if (gameController.isOnSpell() && !(knightState instanceof CastState)) {
+
+            if (consumeSoul()) {
+
+                boolean isUp = gameController.isOnUpMove();
+                setKnightState(new CastState(isUp));
+                executeSpell(isUp);
+            }
+        }
 
         KnightState newState = this.knightState.update(this, gameController, deltaTime);
 
@@ -230,6 +255,18 @@ public class KnightModel {
         }
 
         handleHazardBounds(levelModel);
+
+        Iterator<Spell> iterator = activeSpells.iterator();
+        while (iterator.hasNext()) {
+
+            Spell spell = iterator.next();
+            spell.update(deltaTime, levelModel);
+
+            if (!spell.isActive()) {
+
+                iterator.remove();
+            }
+        }
     }
 
     private void respawnAtLastSafePlatform() {
@@ -336,7 +373,6 @@ public class KnightModel {
 
         checkAttackCollisions(attackHitbox, isDown, levelModel);
     }
-
     private void checkAttackCollisions(Rectangle attackHitbox, boolean isDown, LevelModel levelModel) {
 
         boolean hitSuccessful = false;
@@ -357,11 +393,21 @@ public class KnightModel {
             addSoul();
         }
     }
-
     private void applyPogoBounce() {
 
         yVelocity = POGO_BOUNCE_SPEED;
         canDash = true;
         canDoubleJump = true;
+    }
+
+    private void executeSpell(boolean isUpwardCast) {
+
+        if (isUpwardCast) {
+
+            activeSpells.add(new HowlingWraiths(x, y, width));
+        }
+        else {
+            activeSpells.add(new VengefulSpirit(x, y, isFacingRight));
+        }
     }
 }
