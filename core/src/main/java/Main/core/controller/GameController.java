@@ -12,6 +12,8 @@ public class GameController {
     private boolean onAttack;
     private boolean onFocus;
     private boolean onDownMove;
+    private boolean onUpMove;
+    private boolean onSpell;
 
     public void update() {
 
@@ -22,6 +24,8 @@ public class GameController {
         onAttack = Gdx.input.isKeyJustPressed(Input.Keys.X);
         onFocus = Gdx.input.isKeyPressed(Input.Keys.A);
         onDownMove = Gdx.input.isKeyPressed(Input.Keys.DOWN);
+        onUpMove = Gdx.input.isKeyPressed(Input.Keys.UP);
+        onSpell = Gdx.input.isKeyJustPressed(Input.Keys.S);
     }
 
     public boolean isOnLeftMove() {
@@ -45,4 +49,6 @@ public class GameController {
     public boolean isOnDownMove() {
         return onDownMove;
     }
+    public boolean isOnUpMove() { return onUpMove; }
+    public boolean isOnSpell() { return onSpell; }
 }
