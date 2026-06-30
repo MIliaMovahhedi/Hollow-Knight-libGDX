@@ -6,7 +6,7 @@ import Main.core.model.KnightModel;
 public class CastState implements KnightState {
 
     private double castTimer;
-    private final double castDuration = 0.5;
+    private final double castDuration = 0.8;
     private boolean isUpwardCast;
 
     public CastState(boolean isUpwardCast) {
@@ -18,8 +18,17 @@ public class CastState implements KnightState {
     public void enter(KnightModel knight) {
 
         castTimer = 0.0;
-        knight.setXVelocity(0.0);
-        knight.setYVelocity(0.0);
+
+        if (isUpwardCast) {
+
+            knight.setXVelocity(0.0);
+            knight.setYVelocity(-50.0);
+        }
+        else {
+
+            knight.setXVelocity(knight.isFacingRight() ? -30.0 : + 30.0);
+            knight.setYVelocity(0.0);
+        }
     }
 
     @Override

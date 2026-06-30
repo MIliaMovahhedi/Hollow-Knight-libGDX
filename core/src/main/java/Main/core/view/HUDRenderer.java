@@ -179,7 +179,7 @@ public class HUDRenderer {
 
     private void drawSoulVessel(SpriteBatch batch, float baseDrawX, float baseDrawY, float deltaTime) {
 
-        float vesselX = baseDrawX + 10f;
+        float vesselX = baseDrawX;
         float vesselY = baseDrawY;
 
         float targetFillPercentage = (float) knightModel.getCurrentSoul() / 99.0f;

@@ -74,7 +74,7 @@ public class KnightModel {
 
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
-        this.currentSoul = 0;
+        this.currentSoul = 66;
         this.invincibilityDuration = 1.0;
         this.invincibilityTimer = 0.0;
         this.isInvincible = false;
@@ -255,7 +255,7 @@ public class KnightModel {
             setKnightState(newState);
         }
 
-        yVelocity += GRAVITY * deltaTime;
+        yVelocity += GRAVITY * newState.getGravityScale() * deltaTime;
 
         handleGroundBounds(deltaTime, levelModel);
         handleHazardBounds(levelModel);

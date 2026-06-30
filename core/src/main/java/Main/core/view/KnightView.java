@@ -20,9 +20,18 @@ public class KnightView {
     private final Animation<TextureRegion> dashAnimation;
     private final Animation<TextureRegion> attackSideAnimation;
     private final Animation<TextureRegion> attackDownAnimation;
+    private final Animation<TextureRegion> castForwardAnimation;
+    private final Animation<TextureRegion> castUpAnimation;
+    private final Animation<TextureRegion> focusStartAnimation;
+    private final Animation<TextureRegion> focusGetAnimation;
+    private final Animation<TextureRegion> focusEndAnimation;
+    private final Animation<TextureRegion> focusAnimation;
 
     private float stateTime;
     private KnightState previousState;
+
+    private int previousHealthTracker;
+    private float focusGetEffectTimer;
 
     public KnightView(KnightModel knightModel, TextureAtlas textureAtlas) {
 
@@ -37,11 +46,23 @@ public class KnightView {
         this.dashAnimation = new Animation<>(0.05f, textureAtlas.findRegions("Dash"), Animation.PlayMode.NORMAL);
         this.attackSideAnimation = new Animation<>(0.05f, textureAtlas.findRegions("SlashAlt"), Animation.PlayMode.NORMAL);
         this.attackDownAnimation = new Animation<>(0.05f, textureAtlas.findRegions("DownSlash"), Animation.PlayMode.NORMAL);
+        this.castForwardAnimation = new Animation<>(0.08f, textureAtlas.findRegions("Fireball Cast"), Animation.PlayMode.NORMAL);
+        this.castUpAnimation = new Animation<>(0.08f, textureAtlas.findRegions("Scream"), Animation.PlayMode.LOOP);
+
+        this.focusStartAnimation = new Animation<>(0.1f, textureAtlas.findRegions("Focus Start"), Animation.PlayMode.NORMAL);
+        this.focusGetAnimation = new Animation<>(0.1f, textureAtlas.findRegions("Focus Get"), Animation.PlayMode.NORMAL);
+        this.focusEndAnimation = new Animation<>(0.08f, textureAtlas.findRegions("Focus End"), Animation.PlayMode.NORMAL);
+        this.focusAnimation = new Animation<>(0.1f, textureAtlas.findRegions("Focus"), Animation.PlayMode.LOOP);
+
+        this.previousHealthTracker = (int) knightModel.getCurrentHealth();
+        this.focusGetEffectTimer = -1.0f;
     }
 
     public void render(SpriteBatch spriteBatch, float deltaTime) {
 
         updateStateTime(deltaTime);
+        trackHealingEffect(deltaTime);
+
         TextureRegion currentFrame = determineCurrentFrame();
         adjustFrameFacingDirection(currentFrame);
         drawFrameWithDamageEffect(spriteBatch, currentFrame);
@@ -57,7 +78,6 @@ public class KnightView {
         }
         stateTime += deltaTime;
     }
-
     private TextureRegion determineCurrentFrame() {
 
         KnightState currentState = knightModel.getKnightState();
@@ -71,6 +91,33 @@ public class KnightView {
             else {
 
                 return attackSideAnimation.getKeyFrame(stateTime);
+            }
+        }
+        else if (currentState instanceof CastState castState) {
+
+            if (castState.isUpwardCast()) {
+
+                return castUpAnimation.getKeyFrame(stateTime);
+            }
+            else {
+
+                return castForwardAnimation.getKeyFrame(stateTime);
+            }
+        }
+        else if (currentState instanceof FocusState) {
+
+            if (!focusStartAnimation.isAnimationFinished(stateTime)) {
+
+                return focusStartAnimation.getKeyFrame(stateTime);
+            }
+            else if (focusGetEffectTimer >= 0.0f) {
+
+                return focusGetAnimation.getKeyFrame(focusGetEffectTimer);
+            }
+            else {
+
+                float loopTime = stateTime - focusStartAnimation.getAnimationDuration();
+                return focusAnimation.getKeyFrame(loopTime);
             }
         }
         else if (currentState instanceof DashState) {
@@ -100,7 +147,6 @@ public class KnightView {
 
         return idleAnimation.getKeyFrame(stateTime);
     }
-
     private void adjustFrameFacingDirection(TextureRegion currentFrame) {
 
         boolean shouldFaceLeft = !knightModel.isFacingRight();
@@ -110,7 +156,6 @@ public class KnightView {
             currentFrame.flip(true, false);
         }
     }
-
     private void drawFrameWithDamageEffect(SpriteBatch spriteBatch, TextureRegion currentFrame) {
 
         float hitboxX = (float) knightModel.getX();
@@ -137,7 +182,6 @@ public class KnightView {
 
         spriteBatch.setColor(Color.WHITE);
     }
-
     private void applyBlinkingDamageEffect(SpriteBatch spriteBatch) {
 
         int blinkFrequency = (int) (stateTime * 15);
@@ -148,6 +192,27 @@ public class KnightView {
         else {
 
             spriteBatch.setColor(1.0f, 1.0f, 1.0f, 0.4f);
+        }
+    }
+
+    private void trackHealingEffect(float deltaTime) {
+
+        int currentHealth = (int) knightModel.getCurrentHealth();
+
+        if (currentHealth > previousHealthTracker) {
+
+            focusGetEffectTimer = 0.0f;
+        }
+        previousHealthTracker = currentHealth;
+
+        if (focusGetEffectTimer >= 0.0f) {
+
+            focusGetEffectTimer += deltaTime;
+
+            if (focusGetAnimation.isAnimationFinished(focusGetEffectTimer)) {
+
+                focusGetEffectTimer = -1.0f;
+            }
         }
     }
 }
