@@ -23,6 +23,8 @@ public class KnightModel {
     private double yVelocity;
     private double width;
     private double height;
+    private boolean isDown;
+    private boolean isOnHurt;
 
     private double maxHealth;
     private double currentHealth;
@@ -66,6 +68,7 @@ public class KnightModel {
         this.yVelocity = 0.0;
         this.width = 128;
         this.height = 160;
+        this.isOnHurt = false;
 
         this.activeSpells = new ArrayList<>();
 
@@ -152,6 +155,8 @@ public class KnightModel {
 
         if (isInvincible) return true;
 
+        isOnHurt = true;
+
         currentHealth -= damageAmount;
         if (currentHealth <= 0) {
 
@@ -204,6 +209,15 @@ public class KnightModel {
             currentHealth++;
         }
     }
+    public boolean isInvincible() {
+        return isInvincible;
+    }
+    public boolean isDown() {
+        return isDown;
+    }
+    public boolean isOnHurt() {
+        return isOnHurt;
+    }
 
     public void setKnightState(KnightState knightState) {
         this.knightState = knightState;
@@ -211,9 +225,11 @@ public class KnightModel {
     }
     public void update(GameController gameController, LevelModel levelModel, double deltaTime) {
 
+        isOnHurt = false;
+
         if (gameController.isOnAttack() && !(this.knightState instanceof AttackState)) {
 
-            boolean isDown = gameController.isOnDownMove() && !isGrounded;
+            isDown = gameController.isOnDownMove() && !isGrounded;
 
             setKnightState(new AttackState(isDown));
             executeAttack(isDown, levelModel);
@@ -242,6 +258,7 @@ public class KnightModel {
         yVelocity += GRAVITY * deltaTime;
 
         handleGroundBounds(deltaTime, levelModel);
+        handleHazardBounds(levelModel);
 
         if (isInvincible) {
 
@@ -257,8 +274,6 @@ public class KnightModel {
             lastSafeX = this.x;
             lastSafeY = this.y;
         }
-
-        handleHazardBounds(levelModel);
 
         Iterator<Spell> iterator = activeSpells.iterator();
         while (iterator.hasNext()) {

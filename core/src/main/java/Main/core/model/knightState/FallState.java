@@ -29,7 +29,10 @@ public class FallState implements KnightState {
         if (gameController.isOnJump() && knight.canDoubleJump()) {
 
             knight.setCanDoubleJump(false);
-            return new JumpState();
+            JumpState newState = new JumpState();
+            newState.setOnDoubleJump(true);
+
+            return newState;
         }
 
         if (gameController.isOnDash() && knight.canDash()) {

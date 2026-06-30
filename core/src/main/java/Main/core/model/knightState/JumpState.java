@@ -5,6 +5,15 @@ import Main.core.model.KnightModel;
 
 public class JumpState implements KnightState {
 
+    private boolean isOnDoubleJump = false;
+
+    public boolean isOnDoubleJump() {
+        return isOnDoubleJump;
+    }
+    public void setOnDoubleJump(boolean isOnDoubleJump) {
+        this.isOnDoubleJump = isOnDoubleJump;
+    }
+
     @Override
     public void enter(KnightModel knight) {
 
@@ -33,7 +42,10 @@ public class JumpState implements KnightState {
         if (gameController.isOnJump() && knight.canDoubleJump()) {
 
             knight.setCanDoubleJump(false);
-            return new JumpState();
+            JumpState newState = new JumpState();
+            newState.setOnDoubleJump(true);
+
+            return newState;
         }
         else if (gameController.isOnDash() && knight.canDash()) {
 
