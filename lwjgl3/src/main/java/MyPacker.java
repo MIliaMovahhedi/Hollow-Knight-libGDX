@@ -11,5 +11,11 @@ public class MyPacker {
             "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\knight_atlas",
             "knight"
         );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_HUD_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\HUD_atlas",
+            "knight"
+        );
     }
 }
