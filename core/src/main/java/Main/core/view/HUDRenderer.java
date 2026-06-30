@@ -1,9 +1,8 @@
-package Main.core.view.screen;
+package Main.core.view;
 
 import Main.core.model.KnightModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -11,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.min;
 
 public class HUDRenderer {
 
@@ -40,13 +41,14 @@ public class HUDRenderer {
 
     private final List<MaskData> masks;
     private int previousHealth;
+    private float displayedSoulFill = 0.0f;
 
 
     public HUDRenderer(KnightModel knightModel, TextureAtlas atlas) {
 
         this.knightModel = knightModel;
         this.hudCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        this.hudCamera.position.set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0);
+        hudCamera.setToOrtho(false, 1920, 1080);
         this.hudCamera.update();
 
         this.healthBarTexture = atlas.findRegion("HealthBarStatic");
@@ -76,15 +78,17 @@ public class HUDRenderer {
 
         syncHealthStates();
 
+        float virtualHeight = 1080f;
+
         float hudBaseX = 30f;
-        float hudBaseY = Gdx.graphics.getHeight() - 150f;
+        float hudBaseY = virtualHeight - 180f;
 
         batch.begin();
 
         batch.draw(healthBarTexture, hudBaseX, hudBaseY);
-        drawSoulVessel(batch, hudBaseX, hudBaseY);
+        drawSoulVessel(batch, hudBaseX, hudBaseY, deltaTime);
 
-        float masksStartX = hudBaseX + 120f;
+        float masksStartX = hudBaseX + 130f;
         float masksStartY = hudBaseY + 40f;
 
         drawMasks(batch, deltaTime, masksStartX, masksStartY);
@@ -122,7 +126,8 @@ public class HUDRenderer {
 
     private void drawMasks(SpriteBatch batch, float deltaTime,  float masksStartX, float masksStartY) {
 
-        float spacing = 65f;
+        float spacing = 60f;
+        float maskScale = 0.65f;
 
         for (int i = 0; i < masks.size(); i++) {
 
@@ -131,7 +136,13 @@ public class HUDRenderer {
             TextureRegion regionToDraw = determineMaskFrame(mask);
 
             if (regionToDraw != null) {
-                batch.draw(regionToDraw, masksStartX + (i * spacing), masksStartY);
+
+                float renderWidth = regionToDraw.getRegionWidth() * maskScale;
+                float renderHeight = regionToDraw.getRegionHeight() * maskScale;
+
+                float drawX = masksStartX + (i * spacing);
+
+                batch.draw(regionToDraw, drawX, masksStartY, renderWidth, renderHeight);
             }
         }
     }
@@ -166,16 +177,19 @@ public class HUDRenderer {
         };
     }
 
-    private void drawSoulVessel(SpriteBatch batch, float baseDrawX, float baseDrawY) {
+    private void drawSoulVessel(SpriteBatch batch, float baseDrawX, float baseDrawY, float deltaTime) {
 
-        float vesselX = baseDrawX + 15f;
-        float vesselY = baseDrawY + 20f;
+        float vesselX = baseDrawX + 10f;
+        float vesselY = baseDrawY;
 
+        float targetFillPercentage = (float) knightModel.getCurrentSoul() / 99.0f;
+        targetFillPercentage = Math.max(0.0f, min(1.0f, targetFillPercentage));
 
-        batch.draw(soulOrbEmpty, vesselX, vesselY);
+        float lerpSpeed = 5.0f;
+        displayedSoulFill += (float) ((targetFillPercentage - displayedSoulFill) * min(1.0f, lerpSpeed * deltaTime));
 
         float fillPercentage = (float) knightModel.getCurrentSoul() / 99.0f;
-        fillPercentage = Math.max(0.0f, Math.min(1.0f, fillPercentage));
+        fillPercentage = Math.max(0.0f, min(1.0f, fillPercentage));
 
         if (fillPercentage > 0) {
 

@@ -3,6 +3,7 @@ package Main.core.view.screen;
 import Main.core.controller.GameController;
 import Main.core.model.KnightModel;
 import Main.core.model.LevelModel;
+import Main.core.view.HUDRenderer;
 import Main.core.view.KnightView;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,8 +21,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.I18NBundle;
 
-import java.io.StringReader;
-
 public class GameScreen extends MenuScreen {
 
     private TiledMap map;
@@ -33,7 +32,9 @@ public class GameScreen extends MenuScreen {
     private KnightModel knightModel;
 
     private TextureAtlas knightAtlas;
+    private TextureAtlas hudAtlas;
     private KnightView knightView;
+    private HUDRenderer hudRenderer;
     private SpriteBatch spriteBatch;
 
     private int fixedFrameRate;
@@ -71,8 +72,12 @@ public class GameScreen extends MenuScreen {
         this.knightModel = new KnightModel(startX, startY);
 
         spriteBatch = new SpriteBatch();
+
         knightAtlas = new TextureAtlas(Gdx.files.internal("animations/knight_atlas/knight.atlas"));
         knightView = new KnightView(knightModel, knightAtlas);
+
+        hudAtlas = new TextureAtlas(Gdx.files.internal("animations/HUD_atlas/hud.atlas"));
+        hudRenderer = new HUDRenderer(knightModel, hudAtlas);
     }
 
     private void loadCollisionLayer() {
@@ -128,6 +133,8 @@ public class GameScreen extends MenuScreen {
         spriteBatch.begin();
         knightView.render(spriteBatch, deltaSeconds);
         spriteBatch.end();
+
+        hudRenderer.render(spriteBatch, deltaSeconds);
 
         accumulator += deltaSeconds;
 
