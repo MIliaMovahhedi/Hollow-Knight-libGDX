@@ -8,11 +8,20 @@ public class VengefulSpirit implements Spell {
     private double x;
     private double y;
     private double speed;
+
     private double lifeTimer;
     private final double maxLifetime = 2.0;
+
     private boolean isFacingRight;
+
+    private boolean isExploding;
+    private double explodeTimer = 0.0;
+    private final double explodeDuration = 0.8;
     private boolean active;
+
     private Rectangle hitbox;
+    private float width;
+    private float height;
 
     public VengefulSpirit(double startX, double startY, double knightWidth, double knightHeight, boolean isFacingRight) {
 
@@ -20,14 +29,18 @@ public class VengefulSpirit implements Spell {
         this.speed = 800.0;
         this.lifeTimer = 0.0;
         this.active = true;
+        this.isExploding = false;
 
         double spellSize = knightHeight;
 
-        double spawnX = isFacingRight ? startX + knightWidth : startX - spellSize;
+        width = (float) spellSize * 2;
+        height = (float) spellSize;
+
+        double spawnX = isFacingRight ? startX + knightWidth : startX - width;
 
         this.x = spawnX;
         this.y = startY;
-        this.hitbox = new Rectangle((float) x, (float) y, (float) spellSize, (float) spellSize);
+        this.hitbox = new Rectangle((float) x, (float) y, width, (float) spellSize);
     }
     @Override
     public void update(double deltaTime, LevelModel levelModel) {
@@ -35,10 +48,21 @@ public class VengefulSpirit implements Spell {
         if (!active)
             return;
 
+        if (isExploding) {
+
+            explodeTimer += deltaTime;
+            if (explodeTimer >= explodeDuration) {
+
+                active = false;
+            }
+
+            return;
+        }
+
         lifeTimer += deltaTime;
         if (lifeTimer >= maxLifetime) {
 
-            active = false;
+            startExplosion();
             return;
         }
 
@@ -50,7 +74,7 @@ public class VengefulSpirit implements Spell {
 
             if (hitbox.overlaps(hazard)) {
 
-                active = false;
+                startExplosion();
                 break;
             }
         }
@@ -64,5 +88,29 @@ public class VengefulSpirit implements Spell {
     @Override
     public Rectangle getHitbox() {
         return hitbox;
+    }
+
+    private void startExplosion() {
+        isExploding = true;
+    }
+    public boolean isExploding() {
+        return isExploding;
+    }
+
+    public boolean isFacingRight() {
+        return isFacingRight;
+    }
+    public float getWidth() {
+        return width;
+    }
+    public float getHeight() {
+        return height;
+    }
+
+    public double getX() {
+        return x;
+    }
+    public double getY() {
+        return y;
     }
 }

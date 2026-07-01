@@ -5,6 +5,7 @@ import Main.core.model.KnightModel;
 import Main.core.model.LevelModel;
 import Main.core.view.HUDRenderer;
 import Main.core.view.KnightView;
+import Main.core.view.SpellRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -33,8 +34,12 @@ public class GameScreen extends MenuScreen {
 
     private TextureAtlas knightAtlas;
     private TextureAtlas hudAtlas;
+    private TextureAtlas effectsAtlas;
+
     private KnightView knightView;
     private HUDRenderer hudRenderer;
+    private SpellRenderer spellRenderer;
+
     private SpriteBatch spriteBatch;
 
     private int fixedFrameRate;
@@ -78,6 +83,9 @@ public class GameScreen extends MenuScreen {
 
         hudAtlas = new TextureAtlas(Gdx.files.internal("animations/HUD_atlas/hud.atlas"));
         hudRenderer = new HUDRenderer(knightModel, hudAtlas);
+
+        effectsAtlas = new TextureAtlas(Gdx.files.internal("animations/effects_atlas/effects.atlas"));
+        spellRenderer = new SpellRenderer(knightModel, effectsAtlas);
     }
 
     private void loadCollisionLayer() {
@@ -132,6 +140,7 @@ public class GameScreen extends MenuScreen {
 
         spriteBatch.begin();
         knightView.render(spriteBatch, deltaSeconds);
+        spellRenderer.render(spriteBatch, deltaSeconds);
         spriteBatch.end();
 
         hudRenderer.render(spriteBatch, deltaSeconds);

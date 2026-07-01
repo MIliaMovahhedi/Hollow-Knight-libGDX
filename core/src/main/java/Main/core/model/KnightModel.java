@@ -219,6 +219,10 @@ public class KnightModel {
         return isOnHurt;
     }
 
+    public List<Spell> getActiveSpells() {
+        return activeSpells;
+    }
+
     public void setKnightState(KnightState knightState) {
         this.knightState = knightState;
         knightState.enter(this);

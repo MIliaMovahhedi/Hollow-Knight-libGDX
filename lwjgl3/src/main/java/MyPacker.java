@@ -17,5 +17,11 @@ public class MyPacker {
             "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\HUD_atlas",
             "hud"
         );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_effects_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\effects_atlas",
+            "effects"
+        );
     }
 }
