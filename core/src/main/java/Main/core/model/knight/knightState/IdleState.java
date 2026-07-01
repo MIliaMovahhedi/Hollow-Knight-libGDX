@@ -1,8 +1,7 @@
-package Main.core.model.knightState;
+package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
-import Main.core.model.GameState;
-import Main.core.model.KnightModel;
+import Main.core.model.knight.KnightModel;
 
 public class IdleState implements KnightState {
 

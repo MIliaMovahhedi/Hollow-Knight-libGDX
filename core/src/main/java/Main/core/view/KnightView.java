@@ -1,7 +1,7 @@
 package Main.core.view;
 
-import Main.core.model.KnightModel;
-import Main.core.model.knightState.*;
+import Main.core.model.knight.KnightModel;
+import Main.core.model.knight.knightState.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,6 +26,9 @@ public class KnightView {
     private final Animation<TextureRegion> focusGetAnimation;
     private final Animation<TextureRegion> focusEndAnimation;
     private final Animation<TextureRegion> focusAnimation;
+    private final Animation<TextureRegion> frontSlashVFXAnimation;
+    private final Animation<TextureRegion> downSlashVFXAnimation;
+    private final Animation<TextureRegion> dashVFXAnimation;
 
     private float stateTime;
     private KnightState previousState;
@@ -54,6 +57,10 @@ public class KnightView {
         this.focusEndAnimation = new Animation<>(0.08f, textureAtlas.findRegions("Focus End"), Animation.PlayMode.NORMAL);
         this.focusAnimation = new Animation<>(0.1f, textureAtlas.findRegions("Focus"), Animation.PlayMode.LOOP);
 
+        this.frontSlashVFXAnimation = new Animation<>(0.02f, textureAtlas.findRegions("SlashEffectAlt"), Animation.PlayMode.NORMAL);
+        this.downSlashVFXAnimation = new Animation<>(0.02f, textureAtlas.findRegions("DownSlashEffect"), Animation.PlayMode.NORMAL);
+        this.dashVFXAnimation = new Animation<>(0.02f, textureAtlas.findRegions("Dash Effect"), Animation.PlayMode.NORMAL);
+
         this.previousHealthTracker = (int) knightModel.getCurrentHealth();
         this.focusGetEffectTimer = -1.0f;
     }
@@ -66,6 +73,7 @@ public class KnightView {
         TextureRegion currentFrame = determineCurrentFrame();
         adjustFrameFacingDirection(currentFrame);
         drawFrameWithDamageEffect(spriteBatch, currentFrame);
+        drawVisualEffects(spriteBatch);
     }
 
     private void updateStateTime(float deltaTime) {
@@ -213,6 +221,58 @@ public class KnightView {
 
                 focusGetEffectTimer = -1.0f;
             }
+        }
+    }
+
+    private void drawVisualEffects(SpriteBatch batch) {
+
+        KnightState currentState = knightModel.getKnightState();
+        float x = (float) knightModel.getX();
+        float y = (float) knightModel.getY();
+        boolean facingRight = knightModel.isFacingRight();
+
+        TextureRegion vfxFrame;
+
+        if (currentState instanceof AttackState) {
+
+            AttackState attackState = (AttackState) currentState;
+
+            if (attackState.isDownAttack()) {
+
+                vfxFrame = downSlashVFXAnimation.getKeyFrame(stateTime);
+                float padding = (vfxFrame.getRegionWidth() -  (float) knightModel.getWidth()) / 2.0f;
+
+                if (vfxFrame.isFlipX() != facingRight) {
+
+                    vfxFrame.flip(true, false);
+                }
+                batch.draw(vfxFrame, x - padding, y - (float) vfxFrame.getRegionHeight() / 2);
+            }
+
+            else {
+
+                vfxFrame = frontSlashVFXAnimation.getKeyFrame(stateTime);
+
+                if (vfxFrame.isFlipX() != facingRight) {
+
+                    vfxFrame.flip(true, false);
+                }
+
+                float vfxX = facingRight ? x : x - vfxFrame.getRegionWidth() + (float) knightModel.getWidth();
+                batch.draw(vfxFrame, vfxX, y);
+            }
+        }
+        else if (currentState instanceof DashState) {
+
+            vfxFrame = dashVFXAnimation.getKeyFrame(stateTime);
+
+            if (vfxFrame.isFlipX() == facingRight) {
+
+                vfxFrame.flip(true, false);
+            }
+
+            float vfxX = facingRight ? x - vfxFrame.getRegionWidth() + 20.0f : x + (float) knightModel.getWidth() - 20.0f;
+            batch.draw(vfxFrame, vfxX, y - vfxFrame.getRegionHeight() / 4.0f);
         }
     }
 }

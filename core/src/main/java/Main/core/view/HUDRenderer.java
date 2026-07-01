@@ -1,6 +1,6 @@
 package Main.core.view;
 
-import Main.core.model.KnightModel;
+import Main.core.model.knight.KnightModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;

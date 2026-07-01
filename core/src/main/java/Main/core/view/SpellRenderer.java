@@ -1,9 +1,9 @@
 package Main.core.view;
 
-import Main.core.model.KnightModel;
-import Main.core.model.spell.HowlingWraiths;
-import Main.core.model.spell.Spell;
-import Main.core.model.spell.VengefulSpirit;
+import Main.core.model.knight.KnightModel;
+import Main.core.model.knight.spell.HowlingWraiths;
+import Main.core.model.knight.spell.Spell;
+import Main.core.model.knight.spell.VengefulSpirit;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -31,7 +31,7 @@ public class SpellRenderer {
         this.blastStateTime =  0.0f;
 
         this.vengefulSpiritAnim = new Animation<>(0.08f, atlas.findRegions("Vengeful Spirit"), Animation.PlayMode.LOOP);
-        this.howlingWraithsAnim = new Animation<>(0.1f, atlas.findRegions("SoulScream"), Animation.PlayMode.NORMAL);
+        this.howlingWraithsAnim = new Animation<>(0.07f, atlas.findRegions("SoulScream"), Animation.PlayMode.NORMAL);
         this.blastAnim = new Animation<>(0.1f, atlas.findRegions("Blast"), Animation.PlayMode.NORMAL);
     }
 
@@ -44,32 +44,30 @@ public class SpellRenderer {
             return;
         }
 
+        vengefulSpiritStateTime += deltaTime;
+
         for (Spell spell : activeSpells) {
 
             if (spell instanceof VengefulSpirit) {
 
-                drawVengefulSpirit(batch, (VengefulSpirit) spell, deltaTime);
+                drawVengefulSpirit(batch, (VengefulSpirit) spell);
             }
             else if (spell instanceof HowlingWraiths) {
 
-                drawHowlingWraiths(batch, (HowlingWraiths) spell, deltaTime);
+                drawHowlingWraiths(batch, (HowlingWraiths) spell);
             }
         }
     }
 
-    private void drawVengefulSpirit(SpriteBatch batch, VengefulSpirit spirit, float deltaTime) {
-
-        vengefulSpiritStateTime += deltaTime;
+    private void drawVengefulSpirit(SpriteBatch batch, VengefulSpirit spirit) {
 
         TextureRegion currentFrame;
 
         if (spirit.isExploding()) {
 
-            blastStateTime += deltaTime;
-            currentFrame = blastAnim.getKeyFrame(blastStateTime);
+            currentFrame = blastAnim.getKeyFrame((float) spirit.getExplodeTimer());
         }
         else {
-
             currentFrame = vengefulSpiritAnim.getKeyFrame(vengefulSpiritStateTime);
         }
 
@@ -89,11 +87,9 @@ public class SpellRenderer {
         batch.draw(currentFrame, renderX, renderY, renderWidth, renderHeight);
     }
 
-    private void drawHowlingWraiths(SpriteBatch batch, HowlingWraiths wraiths, float deltaTime) {
+    private void drawHowlingWraiths(SpriteBatch batch, HowlingWraiths wraiths) {
 
-        howlingWraithsStateTime += deltaTime;
-
-        TextureRegion currentFrame = howlingWraithsAnim.getKeyFrame(howlingWraithsStateTime);
+        TextureRegion currentFrame = howlingWraithsAnim.getKeyFrame((float) wraiths.getTimer());
 
         float renderWidth = wraiths.getWidth() * 2.0f;
         float renderHeight = wraiths.getHeight() * 2.0f;

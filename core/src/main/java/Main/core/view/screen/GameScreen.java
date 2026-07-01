@@ -1,7 +1,7 @@
 package Main.core.view.screen;
 
 import Main.core.controller.GameController;
-import Main.core.model.KnightModel;
+import Main.core.model.knight.KnightModel;
 import Main.core.model.LevelModel;
 import Main.core.view.HUDRenderer;
 import Main.core.view.KnightView;
@@ -180,5 +180,16 @@ public class GameScreen extends MenuScreen {
         camera.position.y = MathUtils.clamp(camera.position.y, cameraHalfHeight, mapPixelHeight - cameraHalfHeight);
 
         camera.update();
+    }
+
+    @Override
+    public void dispose() {
+        spriteBatch.dispose();
+        map.dispose();
+        mapRenderer.dispose();
+        knightAtlas.dispose();
+        hudAtlas.dispose();
+        effectsAtlas.dispose();
+        super.dispose();
     }
 }

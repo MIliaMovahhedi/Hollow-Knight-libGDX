@@ -1,4 +1,4 @@
-package Main.core.model.spell;
+package Main.core.model.knight.spell;
 
 import Main.core.model.LevelModel;
 import com.badlogic.gdx.math.Rectangle;
@@ -90,5 +90,9 @@ public class HowlingWraiths implements Spell {
     }
     public double getY() {
         return spawnY;
+    }
+
+    public double getTimer() {
+        return timer;
     }
 }

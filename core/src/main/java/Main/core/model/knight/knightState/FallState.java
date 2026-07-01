@@ -1,25 +1,12 @@
-package Main.core.model.knightState;
+package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
-import Main.core.model.KnightModel;
+import Main.core.model.knight.KnightModel;
 
-public class JumpState implements KnightState {
-
-    private boolean isOnDoubleJump = false;
-
-    public boolean isOnDoubleJump() {
-        return isOnDoubleJump;
-    }
-    public void setOnDoubleJump(boolean isOnDoubleJump) {
-        this.isOnDoubleJump = isOnDoubleJump;
-    }
+public class FallState implements KnightState {
 
     @Override
-    public void enter(KnightModel knight) {
-
-        knight.setYVelocity(knight.getMaxJumpSpeed());
-        knight.setGrounded(false);
-    }
+    public void enter(KnightModel knight) {}
 
     @Override
     public KnightState update(KnightModel knight, GameController gameController, double deltaTime) {
@@ -35,7 +22,6 @@ public class JumpState implements KnightState {
             knight.setFacingRight(true);
         }
         else {
-
             knight.setXVelocity(0.0);
         }
 
@@ -47,13 +33,10 @@ public class JumpState implements KnightState {
 
             return newState;
         }
-        else if (gameController.isOnDash() && knight.canDash()) {
+
+        if (gameController.isOnDash() && knight.canDash()) {
 
             return new DashState();
-        }
-        else if (knight.getYVelocity() < 0.0) {
-
-            return new FallState();
         }
 
         if (knight.isGrounded()) {

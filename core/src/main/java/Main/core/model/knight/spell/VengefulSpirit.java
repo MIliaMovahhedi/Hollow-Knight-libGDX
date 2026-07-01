@@ -1,4 +1,4 @@
-package Main.core.model.spell;
+package Main.core.model.knight.spell;
 
 import Main.core.model.LevelModel;
 import com.badlogic.gdx.math.Rectangle;
@@ -112,5 +112,8 @@ public class VengefulSpirit implements Spell {
     }
     public double getY() {
         return y;
+    }
+    public double getExplodeTimer() {
+        return explodeTimer;
     }
 }
