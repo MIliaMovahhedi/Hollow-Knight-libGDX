@@ -25,6 +25,9 @@ public abstract class EnemyModel {
     protected Rectangle bounds;
     protected EnemyState currentState;
 
+    protected double deathTimer = 0.0;
+    protected final double DESPAWN_DURATION = 1.5;
+
     public EnemyModel(double x, double y, double width, double height, double maxHealth, double damageAmount) {
         this.x = x;
         this.y = y;
@@ -52,6 +55,17 @@ public abstract class EnemyModel {
     public void applyGravity(double gravity, double deltaTime) {
 
         this.yVelocity += gravity * deltaTime;
+    }
+
+    public void updateDeath(double deltaTime) {
+
+        if (isDead()) {
+            this.xVelocity = 0;
+            this.deathTimer += deltaTime;
+        }
+    }
+    public boolean canBeRemoved() {
+        return isDead() && deathTimer >= DESPAWN_DURATION;
     }
 
     public void takeDamage(double amount) {

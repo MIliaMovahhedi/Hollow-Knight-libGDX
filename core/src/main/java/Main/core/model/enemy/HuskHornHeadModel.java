@@ -19,6 +19,8 @@ public class HuskHornHeadModel extends EnemyModel {
     @Override
     public void update(double deltaTime, KnightModel knight, LevelModel levelModel) {
 
+        updateDeath(deltaTime);
+
         if (currentState != null) {
 
             EnemyState newState = currentState.update(this,  knight, levelModel, deltaTime);

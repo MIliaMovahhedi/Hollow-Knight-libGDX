@@ -20,6 +20,8 @@ public class CrystalGuardianModel extends EnemyModel {
     @Override
     public void update(double deltaTime, KnightModel knightModel, LevelModel levelModel) {
 
+        updateDeath(deltaTime);
+
         if (currentState != null) {
             EnemyState newState = currentState.update(this, knightModel, levelModel, deltaTime);
             if (newState != currentState) {

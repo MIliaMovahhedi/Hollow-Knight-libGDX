@@ -50,7 +50,15 @@ public class LevelModel {
 
             if (enemy.isDead()) {
 
-                iterator.remove();
+                enemy.updateDeath(deltaTime);
+                if (enemy.canBeRemoved()) {
+
+                    iterator.remove();
+                }
+            }
+            else {
+
+                enemy.update(deltaTime, knight, this);
             }
         }
     }

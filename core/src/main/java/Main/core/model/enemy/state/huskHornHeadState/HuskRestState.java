@@ -24,10 +24,12 @@ public class HuskRestState implements EnemyState {
         restTimer += deltaTime;
 
         if (seesKnight(enemy, knightModel)) {
+
             return new HuskChargeState();
         }
 
         if (restTimer >= REST_DURATION) {
+
             return new HuskPatrolState();
         }
 
