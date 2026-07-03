@@ -1,4 +1,4 @@
-package Main.core.view;
+package Main.core.view.renderer;
 
 import Main.core.model.knight.KnightModel;
 import com.badlogic.gdx.Gdx;

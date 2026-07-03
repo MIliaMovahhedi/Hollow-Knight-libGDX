@@ -1,4 +1,4 @@
-package Main.core.view;
+package Main.core.view.renderer;
 
 import Main.core.model.knight.KnightModel;
 import Main.core.model.knight.knightState.*;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class KnightView {
+public class KnightRenderer {
 
     private final KnightModel knightModel;
     private final Animation<TextureRegion> idleAnimation;
@@ -36,7 +36,7 @@ public class KnightView {
     private int previousHealthTracker;
     private float focusGetEffectTimer;
 
-    public KnightView(KnightModel knightModel, TextureAtlas textureAtlas) {
+    public KnightRenderer(KnightModel knightModel, TextureAtlas textureAtlas) {
 
         this.knightModel = knightModel;
         this.stateTime = 0.0f;
