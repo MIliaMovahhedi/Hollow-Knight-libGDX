@@ -54,6 +54,12 @@ public abstract class EnemyModel {
         this.yVelocity += gravity * deltaTime;
     }
 
+    public void takeDamage(double amount) {
+        this.health -= amount;
+    }
+    public boolean isDead() {
+        return this.health <= 0;
+    }
     public Rectangle getBounds() { return bounds; }
     public double getX() { return x; }
     public double getY() { return y; }
@@ -65,4 +71,8 @@ public abstract class EnemyModel {
     public void setXVelocity(double xVelocity) { this.xVelocity = xVelocity; }
     public double getYVelocity() { return yVelocity; }
     public void setYVelocity(double yVelocity) { this.yVelocity = yVelocity; }
+    public double getDamageAmount() { return damageAmount; }
+    public EnemyState getCurrentState() {
+        return currentState;
+    }
 }
