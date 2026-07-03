@@ -1,10 +1,12 @@
-package Main.core.model;
+package Main.core.model.knight;
 
 import Main.core.controller.GameController;
-import Main.core.model.knightState.*;
-import Main.core.model.spell.HowlingWraiths;
-import Main.core.model.spell.Spell;
-import Main.core.model.spell.VengefulSpirit;
+import Main.core.model.LevelModel;
+import Main.core.model.enemy.EnemyModel;
+import Main.core.model.knight.knightState.*;
+import Main.core.model.knight.spell.HowlingWraiths;
+import Main.core.model.knight.spell.Spell;
+import Main.core.model.knight.spell.VengefulSpirit;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.ArrayList;
@@ -151,13 +153,13 @@ public class KnightModel {
         return yVelocity;
     }
 
-    private boolean takeDamage() {
+    private boolean takeDamage(double incomingDamage) {
 
         if (isInvincible) return true;
 
         isOnHurt = true;
 
-        currentHealth -= damageAmount;
+        currentHealth -= incomingDamage;
         if (currentHealth <= 0) {
 
             handleDeath();
@@ -263,6 +265,7 @@ public class KnightModel {
 
         handleGroundBounds(deltaTime, levelModel);
         handleHazardBounds(levelModel);
+        handleEnemyCollisions(levelModel);
 
         if (isInvincible) {
 
@@ -365,7 +368,7 @@ public class KnightModel {
 
                 if (!isInvincible) {
 
-                    boolean survived = takeDamage();
+                    boolean survived = takeDamage(1.0);
                     if (survived) {
 
                         respawnAtLastSafePlatform();
@@ -412,7 +415,22 @@ public class KnightModel {
             }
         }
 
+        for (EnemyModel enemy : levelModel.getEnemies()) {
+
+            if (attackHitbox.overlaps(enemy.getBounds())) {
+
+                hitSuccessful = true;
+                enemy.takeDamage(this.damageAmount);
+
+                if (isDown) {
+
+                    applyPogoBounce();
+                }
+            }
+        }
+
         if (hitSuccessful) {
+
             addSoul();
         }
     }
@@ -431,6 +449,70 @@ public class KnightModel {
         }
         else {
             activeSpells.add(new VengefulSpirit(x, y, width, height, isFacingRight));
+        }
+    }
+
+    private void handleEnemyCollisions(LevelModel levelModel) {
+
+        for (EnemyModel enemy : levelModel.getEnemies()) {
+
+            if (bounds.overlaps(enemy.getBounds())) {
+                processDamageFromSource(enemy);
+            }
+
+            if (enemy instanceof Main.core.model.enemy.CrystalGuardianModel) {
+
+                Rectangle laser = ((Main.core.model.enemy.CrystalGuardianModel) enemy).getActiveLaserBounds();
+                if (laser != null && bounds.overlaps(laser)) {
+
+                    processDamageFromSource(enemy);
+                }
+            }
+        }
+    }
+    private void processDamageFromSource(EnemyModel enemy) {
+
+        if (!isInvincible) {
+
+            boolean survived = takeDamage(enemy.getDamageAmount());
+            if (survived) {
+
+                applyDamageKnockback(enemy);
+            }
+            else {
+
+                respawnAtStart();
+            }
+        }
+    }
+    private void applyDamageKnockback(EnemyModel enemy) {
+
+        double knightCenterX = this.x + (this.width / 2.0);
+        double knightCenterY = this.y + (this.height / 2.0);
+        double enemyCenterX = enemy.getX() + (enemy.getWidth() / 2.0);
+        double enemyCenterY = enemy.getY() + (enemy.getHeight() / 2.0);
+
+        double overlapX = (this.width / 2.0) + (enemy.getWidth() / 2.0) - Math.abs(knightCenterX - enemyCenterX);
+        double overlapY = (this.height / 2.0) + (enemy.getHeight() / 2.0) - Math.abs(knightCenterY - enemyCenterY);
+
+        this.isGrounded = false;
+
+        if (overlapX < overlapY) {
+
+            this.yVelocity = 300.0;
+            this.xVelocity = (knightCenterX < enemyCenterX) ? -400.0 : 400.0;
+        }
+        else {
+
+            if (knightCenterY > enemyCenterY) {
+
+                this.yVelocity = 500.0;
+                this.xVelocity = (knightCenterX < enemyCenterX) ? -150.0 : 150.0;
+            }
+            else {
+                this.yVelocity = -300.0;
+                this.xVelocity = (knightCenterX < enemyCenterX) ? -400.0 : 400.0;
+            }
         }
     }
 }
