@@ -1,11 +1,13 @@
 package Main.core.view.screen;
 
 import Main.core.controller.GameController;
+import Main.core.model.enemy.*;
 import Main.core.model.knight.KnightModel;
 import Main.core.model.LevelModel;
-import Main.core.view.HUDRenderer;
-import Main.core.view.KnightView;
-import Main.core.view.SpellRenderer;
+import Main.core.view.renderer.EnemyRenderer;
+import Main.core.view.renderer.HUDRenderer;
+import Main.core.view.renderer.KnightRenderer;
+import Main.core.view.renderer.SpellRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -32,19 +34,25 @@ public class GameScreen extends MenuScreen {
     private GameController controller;
     private KnightModel knightModel;
 
+    private KnightRenderer knightRenderer;
+    private HUDRenderer hudRenderer;
+    private SpellRenderer spellRenderer;
+    private EnemyRenderer enemyRenderer;
+
     private TextureAtlas knightAtlas;
     private TextureAtlas hudAtlas;
     private TextureAtlas effectsAtlas;
-
-    private KnightView knightView;
-    private HUDRenderer hudRenderer;
-    private SpellRenderer spellRenderer;
+    private TextureAtlas crawlidAtlas;
+    private TextureAtlas mossflyAtlas;
+    private TextureAtlas huskAtlas;
+    private TextureAtlas guardianAtlas;
 
     private SpriteBatch spriteBatch;
 
     private int fixedFrameRate;
     private double fixedDeltaTime;
     private double accumulator;
+
 
     public GameScreen() {
         this.controller = new GameController();
@@ -79,13 +87,20 @@ public class GameScreen extends MenuScreen {
         spriteBatch = new SpriteBatch();
 
         knightAtlas = new TextureAtlas(Gdx.files.internal("animations/knight_atlas/knight.atlas"));
-        knightView = new KnightView(knightModel, knightAtlas);
+        knightRenderer = new KnightRenderer(knightModel, knightAtlas);
 
         hudAtlas = new TextureAtlas(Gdx.files.internal("animations/HUD_atlas/hud.atlas"));
         hudRenderer = new HUDRenderer(knightModel, hudAtlas);
 
         effectsAtlas = new TextureAtlas(Gdx.files.internal("animations/effects_atlas/effects.atlas"));
         spellRenderer = new SpellRenderer(knightModel, effectsAtlas);
+
+        crawlidAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/crawlid.atlas"));
+        mossflyAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/mossfly.atlas"));
+        huskAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/husk.atlas"));
+        guardianAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/guardian.atlas"));
+
+        enemyRenderer = new EnemyRenderer(crawlidAtlas, mossflyAtlas, huskAtlas, guardianAtlas);
     }
 
     private void loadCollisionLayer() {
@@ -110,6 +125,32 @@ public class GameScreen extends MenuScreen {
 
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
                     levelModel.addHazardBound(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+                }
+            }
+        }
+
+        if (map.getLayers().get("Enemies") != null) {
+
+            for (MapObject object : map.getLayers().get("Enemies").getObjects()) {
+
+                float spawnX = object.getProperties().get("x", Float.class);
+                float spawnY = object.getProperties().get("y", Float.class);
+                String enemyType = object.getName();
+
+                if (enemyType == null) continue;
+
+                EnemyModel enemy = switch (enemyType) {
+
+                    case "Crawlid" -> new CrawlidModel(spawnX, spawnY);
+                    case "Mossfly" -> new MossflyModel(spawnX, spawnY);
+                    case "Husk" -> new HuskHornHeadModel(spawnX, spawnY);
+                    case "Guardian" -> new CrystalGuardianModel(spawnX, spawnY);
+                    default -> null;
+                };
+
+                if (enemy != null) {
+
+                    levelModel.addEnemy(enemy);
                 }
             }
         }
@@ -139,7 +180,8 @@ public class GameScreen extends MenuScreen {
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
-        knightView.render(spriteBatch, deltaSeconds);
+        knightRenderer.render(spriteBatch, deltaSeconds);
+        enemyRenderer.render(spriteBatch, levelModel, deltaSeconds);
         spellRenderer.render(spriteBatch, deltaSeconds);
         spriteBatch.end();
 
@@ -151,6 +193,7 @@ public class GameScreen extends MenuScreen {
 
             accumulator -= fixedDeltaTime;
             knightModel.update(controller, levelModel, fixedDeltaTime);
+            levelModel.updateEnemies(fixedDeltaTime, knightModel);
         }
     }
 
