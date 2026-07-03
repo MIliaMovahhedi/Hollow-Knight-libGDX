@@ -74,6 +74,9 @@ public abstract class EnemyModel {
     public boolean isDead() {
         return this.health <= 0;
     }
+    public boolean isGrounded() {
+        return isGrounded;
+    }
     public Rectangle getBounds() { return bounds; }
     public double getX() { return x; }
     public double getY() { return y; }

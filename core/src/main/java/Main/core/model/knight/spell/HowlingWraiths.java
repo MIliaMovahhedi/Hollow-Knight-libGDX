@@ -58,10 +58,11 @@ public class HowlingWraiths implements Spell {
 
     private void applyDamageTick(LevelModel levelModel) {
 
-        for (Rectangle hazard : levelModel.getHazardBounds()) {
+        for (Main.core.model.enemy.EnemyModel enemy : levelModel.getEnemies()) {
 
-            if (hitbox.overlaps(hazard)) {
+            if (!enemy.isDead() && hitbox.overlaps(enemy.getBounds())) {
 
+                enemy.takeDamage(1.5);
             }
         }
     }

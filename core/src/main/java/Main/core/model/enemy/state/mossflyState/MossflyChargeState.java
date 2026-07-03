@@ -42,11 +42,13 @@ public class MossflyChargeState implements EnemyState {
         double currentDeltaY = targetY - enemy.getY();
         double distanceToTarget = Math.sqrt((currentDeltaX * currentDeltaX) + (currentDeltaY * currentDeltaY));
 
-        if (distanceToTarget <= ARRIVAL_THRESHOLD) {
+        if (distanceToTarget <= ARRIVAL_THRESHOLD ||
+            isHittingWall(enemy, levelModel) ||
+            enemy.isGrounded() ||
+            (enemy.getXVelocity() == 0 && currentDeltaX != 0)) {
 
             return new MossflyHoverState();
         }
-
         return this;
     }
 

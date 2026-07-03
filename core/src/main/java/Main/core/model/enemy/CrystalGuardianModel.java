@@ -22,7 +22,11 @@ public class CrystalGuardianModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
-        if (currentState != null) {
+        if (isDead()) {
+
+            setActiveLaserBounds(null);
+        }
+        else if (currentState != null) {
             EnemyState newState = currentState.update(this, knightModel, levelModel, deltaTime);
             if (newState != currentState) {
                 changeState(newState);

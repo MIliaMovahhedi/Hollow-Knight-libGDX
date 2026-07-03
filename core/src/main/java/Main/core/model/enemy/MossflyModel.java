@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class MossflyModel extends EnemyModel {
 
+    private final double GRAVITY = -900.0;
+
     public MossflyModel(double startX, double startY) {
 
         super(startX, startY, 48, 48, 3.0, 1.0);
@@ -19,7 +21,11 @@ public class MossflyModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
-        if (currentState != null) {
+        if (isDead()) {
+
+            applyGravity(GRAVITY, deltaTime);
+        }
+        else if (currentState != null) {
 
             EnemyState newState = currentState.update(this, knight, levelModel, deltaTime);
             if (newState != currentState) {

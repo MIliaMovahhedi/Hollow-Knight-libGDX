@@ -417,6 +417,8 @@ public class KnightModel {
 
         for (EnemyModel enemy : levelModel.getEnemies()) {
 
+            if (enemy.isDead()) continue;
+
             if (attackHitbox.overlaps(enemy.getBounds())) {
 
                 hitSuccessful = true;
@@ -455,6 +457,8 @@ public class KnightModel {
     private void handleEnemyCollisions(LevelModel levelModel) {
 
         for (EnemyModel enemy : levelModel.getEnemies()) {
+
+            if (enemy.isDead()) continue;
 
             if (bounds.overlaps(enemy.getBounds())) {
                 processDamageFromSource(enemy);

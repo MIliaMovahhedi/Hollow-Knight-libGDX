@@ -44,21 +44,14 @@ public class LevelModel {
     public void updateEnemies(double deltaTime, KnightModel knight) {
 
         Iterator<EnemyModel> iterator = enemies.iterator();
+
         while (iterator.hasNext()) {
+
             EnemyModel enemy = iterator.next();
             enemy.update(deltaTime, knight, this);
 
-            if (enemy.isDead()) {
-
-                enemy.updateDeath(deltaTime);
-                if (enemy.canBeRemoved()) {
-
-                    iterator.remove();
-                }
-            }
-            else {
-
-                enemy.update(deltaTime, knight, this);
+            if (enemy.canBeRemoved()) {
+                iterator.remove();
             }
         }
     }

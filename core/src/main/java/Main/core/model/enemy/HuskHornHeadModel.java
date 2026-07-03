@@ -21,7 +21,7 @@ public class HuskHornHeadModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
-        if (currentState != null) {
+        if (currentState != null && !isDead()) {
 
             EnemyState newState = currentState.update(this,  knight, levelModel, deltaTime);
             if (newState != currentState) {

@@ -3,6 +3,7 @@ package Main.core.model.enemy.state.crystalGuardianState;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.state.EnemyState;
+import Main.core.model.enemy.state.EnemyTurnState;
 import Main.core.model.knight.KnightModel;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -24,7 +25,6 @@ public class GuardianEnragedState implements EnemyState {
 
         enemy.setXVelocity(0);
         cooldownTimer = 0.0;
-        enragedTimer = 0.0;
     }
 
     @Override
@@ -38,7 +38,12 @@ public class GuardianEnragedState implements EnemyState {
             return new GuardianIdleState();
         }
 
-        enemy.setFacingRight(knightModel.getX() > enemy.getX());
+        boolean targetIsRight = knightModel.getX() > enemy.getX();
+        if (targetIsRight != enemy.isFacingRight()) {
+
+            return new EnemyTurnState(new GuardianEnragedState(enragedTimer));
+        }
+
         enemy.setXVelocity(enemy.isFacingRight() ? CHARGE_SPEED : -CHARGE_SPEED);
 
         if (cooldownTimer >= FAST_COOLDOWN && seesKnight(enemy, knightModel)) {
@@ -46,9 +51,9 @@ public class GuardianEnragedState implements EnemyState {
             return new GuardianShootState(enragedTimer);
         }
 
-        if (isHittingWall(enemy, levelModel, deltaTime)) {
+        if (isHittingWall(enemy, levelModel) || isAtCliffEdge(enemy, levelModel)) {
 
-            enemy.setXVelocity(0);
+            return new GuardianIdleState();
         }
 
         return this;
@@ -80,24 +85,5 @@ public class GuardianEnragedState implements EnemyState {
         );
 
         return visionBounds.overlaps(knightBounds);
-    }
-
-    private boolean isHittingWall(EnemyModel enemy, LevelModel levelModel, double deltaTime) {
-
-        float sweepDistance = (float) Math.abs(enemy.getXVelocity() * deltaTime);
-        float probeX = enemy.isFacingRight()
-            ? (float) (enemy.getX() + enemy.getWidth())
-            : (float) (enemy.getX() - sweepDistance);
-        float probeY = (float) enemy.getY() + 2.0f;
-        float probeHeight = (float) enemy.getHeight() - 4.0f;
-
-        Rectangle wallProbe = new Rectangle(probeX, probeY, sweepDistance, probeHeight);
-
-        for (Rectangle rect : levelModel.getGroundBounds()) {
-            if (wallProbe.overlaps(rect)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

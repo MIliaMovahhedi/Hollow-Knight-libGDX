@@ -21,7 +21,8 @@ public class CrawlidModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
-        if (currentState != null) {
+
+        if (currentState != null && !isDead()) {
 
             EnemyState newState = currentState.update(this, knightModel, levelModel, deltaTime);
             if (newState != currentState) {
@@ -31,6 +32,7 @@ public class CrawlidModel extends EnemyModel {
         }
 
         applyGravity(GRAVITY, deltaTime);
+
         handlePhysicsBounds(deltaTime, levelModel);
     }
 
