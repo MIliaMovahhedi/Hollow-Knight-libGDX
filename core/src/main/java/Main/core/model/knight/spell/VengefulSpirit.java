@@ -70,6 +70,23 @@ public class VengefulSpirit implements Spell {
         x += speed * moveDirection * deltaTime;
         hitbox.setX((float) x);
 
+        for (Main.core.model.enemy.EnemyModel enemy : levelModel.getEnemies()) {
+
+            if (!enemy.isDead() && hitbox.overlaps(enemy.getBounds())) {
+
+                enemy.takeDamage(3.0);
+                startExplosion();
+                return;
+            }
+        }
+
+        for (Rectangle ground : levelModel.getGroundBounds()) {
+            if (hitbox.overlaps(ground)) {
+                startExplosion();
+                break;
+            }
+        }
+
         for (Rectangle hazard : levelModel.getHazardBounds()) {
 
             if (hitbox.overlaps(hazard)) {
