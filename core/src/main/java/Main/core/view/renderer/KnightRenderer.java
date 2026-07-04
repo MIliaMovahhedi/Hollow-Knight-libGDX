@@ -13,19 +13,26 @@ public class KnightRenderer {
     private final KnightModel knightModel;
     private final Animation<TextureRegion> idleAnimation;
     private final Animation<TextureRegion> idleHurtAnimation;
+
     private final Animation<TextureRegion> runAnimation;
+
     private final Animation<TextureRegion> jumpAnimation;
     private final Animation<TextureRegion> doubleJumpAnimation;
     private final Animation<TextureRegion> fallAnimation;
+
     private final Animation<TextureRegion> dashAnimation;
+
     private final Animation<TextureRegion> attackSideAnimation;
     private final Animation<TextureRegion> attackDownAnimation;
+
     private final Animation<TextureRegion> castForwardAnimation;
     private final Animation<TextureRegion> castUpAnimation;
+
     private final Animation<TextureRegion> focusStartAnimation;
     private final Animation<TextureRegion> focusGetAnimation;
     private final Animation<TextureRegion> focusEndAnimation;
     private final Animation<TextureRegion> focusAnimation;
+
     private final Animation<TextureRegion> frontSlashVFXAnimation;
     private final Animation<TextureRegion> downSlashVFXAnimation;
     private final Animation<TextureRegion> dashVFXAnimation;
@@ -92,13 +99,15 @@ public class KnightRenderer {
 
         if (currentState instanceof AttackState) {
 
+            float speedMultiplier = (float) (knightModel.getBaseAttackDuration() / knightModel.getAttackDuration());
+
             if (knightModel.isDown()) {
 
-                return attackDownAnimation.getKeyFrame(stateTime);
+                return attackDownAnimation.getKeyFrame(stateTime * speedMultiplier);
             }
             else {
 
-                return attackSideAnimation.getKeyFrame(stateTime);
+                return attackSideAnimation.getKeyFrame(stateTime * speedMultiplier);
             }
         }
         else if (currentState instanceof CastState castState) {
@@ -127,6 +136,10 @@ public class KnightRenderer {
                 float loopTime = stateTime - focusStartAnimation.getAnimationDuration();
                 return focusAnimation.getKeyFrame(loopTime);
             }
+        }
+        else if (currentState instanceof FocusEndState) {
+
+            return focusEndAnimation.getKeyFrame(stateTime);
         }
         else if (currentState instanceof DashState) {
 

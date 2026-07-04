@@ -6,7 +6,6 @@ import Main.core.model.knight.KnightModel;
 public class FocusState implements KnightState {
 
     private double focusTimer;
-    private final double focusDuration = 1.5;
 
     @Override
     public void enter(KnightModel knight) {
@@ -20,11 +19,11 @@ public class FocusState implements KnightState {
 
         if (!gameController.isOnFocus()) {
 
-            return new IdleState();
+            return new FocusEndState();
         }
 
         focusTimer += deltaTime;
-        if (focusTimer >= focusDuration) {
+        if (focusTimer >= knight.getFocusDuration()) {
 
             if (knight.getCurrentHealth() < knight.getMaxHealth() && knight.consumeSoul()) {
 
