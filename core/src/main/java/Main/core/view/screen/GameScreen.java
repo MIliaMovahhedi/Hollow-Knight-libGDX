@@ -233,6 +233,10 @@ public class GameScreen extends MenuScreen {
         knightAtlas.dispose();
         hudAtlas.dispose();
         effectsAtlas.dispose();
+        crawlidAtlas.dispose();
+        mossflyAtlas.dispose();
+        huskAtlas.dispose();
+        guardianAtlas.dispose();
         super.dispose();
     }
 }
