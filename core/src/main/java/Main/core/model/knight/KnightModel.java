@@ -2,6 +2,9 @@ package Main.core.model.knight;
 
 import Main.core.controller.GameController;
 import Main.core.model.LevelModel;
+import Main.core.model.charm.Charm;
+import Main.core.model.charm.CharmManager;
+import Main.core.model.charm.CharmObserver;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.knight.knightState.*;
 import Main.core.model.knight.spell.HowlingWraiths;
@@ -13,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class KnightModel {
+public class KnightModel implements CharmObserver {
 
     private double x;
     private double y;
@@ -54,6 +57,21 @@ public class KnightModel {
     private final double ATTACK_RANGE = 40.0;
     private final double POGO_BOUNCE_SPEED = 750.0;
 
+    private final int baseSoulPerHit = 11;
+    private final double baseDamageAmount = 1.0;
+    private final double baseAttackDuration = 0.25;
+    private final double baseFocusDuration = 1.5;
+    private final double baseDashCooldown = 0.6;
+
+    private int currentSoulPerHit;
+    private double currentAttackDuration;
+    private double currentFocusDuration;
+    private double currentDashCooldown;
+
+    private double dashCooldownTimer;
+
+    private CharmManager charmManager;
+
     private Rectangle bounds;
 
     private KnightState knightState;
@@ -83,6 +101,16 @@ public class KnightModel {
         this.damageAmount = 1.0;
 
         this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
+
+        this.currentSoulPerHit = baseSoulPerHit;
+        this.damageAmount = baseDamageAmount;
+        this.currentAttackDuration = baseAttackDuration;
+        this.currentFocusDuration = baseFocusDuration;
+        this.currentDashCooldown = baseDashCooldown;
+        this.dashCooldownTimer = 0.0;
+
+        this.charmManager = new CharmManager();
+        this.charmManager.addObserver(this);
     }
 
     public KnightState getKnightState() {
@@ -118,11 +146,14 @@ public class KnightModel {
         isFacingRight = facingRight;
     }
 
-    public boolean canDash() {
-        return canDash;
-    }
+    public boolean canDash() { return canDash && dashCooldownTimer <= 0; }
     public void setCanDash(boolean canDash) {
         this.canDash = canDash;
+    }
+    public void startDashCooldown() {
+
+        dashCooldownTimer = currentDashCooldown;
+        canDash = false;
     }
 
     public double getDashDuration() {
@@ -130,6 +161,10 @@ public class KnightModel {
     }
     public double getDashSpeed() {
         return DASH_SPEED;
+    }
+
+    public double getBaseAttackDuration() {
+        return baseAttackDuration;
     }
 
     public boolean canDoubleJump() {
@@ -232,6 +267,11 @@ public class KnightModel {
     public void update(GameController gameController, LevelModel levelModel, double deltaTime) {
 
         isOnHurt = false;
+
+        if (dashCooldownTimer > 0) {
+
+            dashCooldownTimer -= deltaTime;
+        }
 
         if (gameController.isOnAttack() && !(this.knightState instanceof AttackState)) {
 
@@ -552,4 +592,29 @@ public class KnightModel {
             }
         }
     }
+
+    @Override
+    public void onCharmsUpdated(List<Charm> activeCharms) {
+
+        currentSoulPerHit = baseSoulPerHit;
+        damageAmount = baseDamageAmount;
+        currentAttackDuration = baseAttackDuration;
+        currentFocusDuration = baseFocusDuration;
+        currentDashCooldown = baseDashCooldown;
+
+        for (Charm charm : activeCharms) {
+
+            switch (charm) {
+
+                case SOUL_CATCHER -> currentSoulPerHit += 3;
+                case UNBREAKABLE_STRENGTH -> damageAmount *= 1.5;
+                case QUICK_SLASH -> currentAttackDuration *= 0.6;
+                case QUICK_FOCUS -> currentFocusDuration *= 0.6;
+                case DASHMASTER -> currentDashCooldown *= 0.5;
+            }
+        }
+    }
+
+    public double getAttackDuration() { return currentAttackDuration; }
+    public double getFocusDuration() { return currentFocusDuration; }
 }

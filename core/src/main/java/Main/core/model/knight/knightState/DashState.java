@@ -10,7 +10,7 @@ public class DashState implements KnightState {
     @Override
     public void enter(KnightModel knight) {
 
-        knight.setCanDash(false);
+        knight.startDashCooldown();
         knight.setYVelocity(0.0);
 
         if (knight.isFacingRight()) {

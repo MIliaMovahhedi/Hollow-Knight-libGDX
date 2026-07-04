@@ -5,7 +5,6 @@ import Main.core.model.knight.KnightModel;
 
 public class AttackState implements KnightState{
 
-    private double attackDuration = 0.25;
     private double timer;
     private boolean isDownAttack;
 
@@ -24,7 +23,7 @@ public class AttackState implements KnightState{
 
         timer += deltaTime;
 
-        if (timer >= attackDuration) {
+        if (timer >= knight.getAttackDuration()) {
 
             if (!knight.isGrounded()) {
 
