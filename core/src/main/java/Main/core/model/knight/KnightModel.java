@@ -472,6 +472,39 @@ public class KnightModel {
                     processDamageFromSource(enemy);
                 }
             }
+
+            if (enemy instanceof Main.core.model.enemy.boss.FalseKnightModel boss) {
+
+
+                Rectangle mace = boss.getActiveWeaponBounds();
+                if (mace != null && bounds.overlaps(mace)) {
+
+                    processDamageFromSource(boss);
+                }
+
+                for (Main.core.model.enemy.boss.BossShockWave wave : boss.getActiveShockWaves()) {
+
+                    if (bounds.overlaps(wave.getBounds()) && !wave.hasHitPlayer()) {
+
+                        if (!isInvincible) {
+
+                            boolean survived = takeDamage(wave.getDamageAmount());
+                            wave.setHasHitPlayer();
+
+                            if (survived) {
+
+                                this.isGrounded = false;
+                                this.yVelocity = 400.0;
+                                this.xVelocity = (this.x < wave.getBounds().getX()) ? -500.0 : 500.0;
+                            }
+                            else {
+
+                                respawnAtStart();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     private void processDamageFromSource(EnemyModel enemy) {
