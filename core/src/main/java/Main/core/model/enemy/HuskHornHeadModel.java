@@ -12,7 +12,7 @@ public class HuskHornHeadModel extends EnemyModel {
 
     public HuskHornHeadModel(double startX, double startY) {
 
-        super(startX, startY, 70, 80, 5.0, 1.0);
+        super(startX, startY, 100, 185, 5.0, 1.0);
         changeState(new HuskPatrolState());
     }
 

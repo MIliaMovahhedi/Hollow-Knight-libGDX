@@ -30,6 +30,7 @@ public class KnightModel implements CharmObserver {
     private double height;
     private boolean isDown;
     private boolean isOnHurt;
+    Rectangle attackHitbox;
 
     private double maxHealth;
     private double currentHealth;
@@ -86,8 +87,8 @@ public class KnightModel implements CharmObserver {
         this.startY = startY;
         this.xVelocity = 0.0;
         this.yVelocity = 0.0;
-        this.width = 128;
-        this.height = 160;
+        this.width = 55;
+        this.height = 85;
         this.isOnHurt = false;
 
         this.activeSpells = new ArrayList<>();
@@ -216,6 +217,10 @@ public class KnightModel implements CharmObserver {
         this.yVelocity = 0;
         bounds.setX((float) x);
         bounds.setY((float) y);
+    }
+
+    public Rectangle getAttackHitbox() {
+        return attackHitbox;
     }
 
     public int getCurrentSoul() {
@@ -424,8 +429,6 @@ public class KnightModel implements CharmObserver {
     }
 
     private void executeAttack(boolean isDown, LevelModel levelModel) {
-
-        Rectangle attackHitbox;
 
         if (isDown) {
 

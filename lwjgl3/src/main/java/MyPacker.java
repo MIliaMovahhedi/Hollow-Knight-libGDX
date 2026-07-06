@@ -23,5 +23,29 @@ public class MyPacker {
             "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\effects_atlas",
             "effects"
         );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_enemies_frames\\raw_crawlid_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\enemies_atlas",
+            "crawlid"
+        );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_enemies_frames\\raw_mossfly_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\enemies_atlas",
+            "mossfly"
+        );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_enemies_frames\\raw_husk_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\enemies_atlas",
+            "husk"
+        );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_enemies_frames\\raw_guardian_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\enemies_atlas",
+            "guardian"
+        );
     }
 }

@@ -4,15 +4,13 @@ import Main.core.controller.GameController;
 import Main.core.model.enemy.*;
 import Main.core.model.knight.KnightModel;
 import Main.core.model.LevelModel;
-import Main.core.view.renderer.EnemyRenderer;
-import Main.core.view.renderer.HUDRenderer;
-import Main.core.view.renderer.KnightRenderer;
-import Main.core.view.renderer.SpellRenderer;
+import Main.core.view.renderer.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -26,6 +24,8 @@ import com.badlogic.gdx.utils.I18NBundle;
 
 public class GameScreen extends MenuScreen {
 
+    private ShapeRenderer shapeRenderer;
+
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private OrthographicCamera camera;
@@ -38,6 +38,7 @@ public class GameScreen extends MenuScreen {
     private HUDRenderer hudRenderer;
     private SpellRenderer spellRenderer;
     private EnemyRenderer enemyRenderer;
+    private FalseKnightRenderer falseKnightRenderer;
 
     private TextureAtlas knightAtlas;
     private TextureAtlas hudAtlas;
@@ -46,6 +47,7 @@ public class GameScreen extends MenuScreen {
     private TextureAtlas mossflyAtlas;
     private TextureAtlas huskAtlas;
     private TextureAtlas guardianAtlas;
+    private TextureAtlas falseKnightAtlas;
 
     private SpriteBatch spriteBatch;
 
@@ -61,6 +63,8 @@ public class GameScreen extends MenuScreen {
     @Override
     public void show() {
         super.show();
+
+        shapeRenderer = new ShapeRenderer();
 
         accumulator = 0;
         fixedFrameRate = 120;
@@ -101,6 +105,9 @@ public class GameScreen extends MenuScreen {
         guardianAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/guardian.atlas"));
 
         enemyRenderer = new EnemyRenderer(crawlidAtlas, mossflyAtlas, huskAtlas, guardianAtlas);
+
+//        falseKnightAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/falseKnight.atlas"));
+//        falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
     }
 
     private void loadCollisionLayer() {
@@ -184,6 +191,41 @@ public class GameScreen extends MenuScreen {
         enemyRenderer.render(spriteBatch, levelModel, deltaSeconds);
         spellRenderer.render(spriteBatch, deltaSeconds);
         spriteBatch.end();
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
+
+
+        shapeRenderer.rect((float) knightModel.getX(), (float) knightModel.getY(),
+            (float) knightModel.getWidth(), (float) knightModel.getHeight());
+
+        if (knightModel.getAttackHitbox() != null) {
+            
+            shapeRenderer.rect((float) knightModel.getAttackHitbox().x, (float) knightModel.getAttackHitbox().y,
+                (float) knightModel.getAttackHitbox().width, (float) knightModel.getAttackHitbox().height);
+        }
+
+        for (EnemyModel enemy : levelModel.getEnemies()) {
+            shapeRenderer.rect((float) enemy.getX(), (float) enemy.getY(),
+                (float) enemy.getWidth(), (float) enemy.getHeight());
+
+
+            if (enemy instanceof CrystalGuardianModel boss && boss.getActiveLaserBounds() != null) {
+                shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.YELLOW);
+                shapeRenderer.rect(boss.getActiveLaserBounds().x, boss.getActiveLaserBounds().y,
+                    boss.getActiveLaserBounds().width, boss.getActiveLaserBounds().height);
+                shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
+            }
+        }
+
+        for (Main.core.model.knight.spell.Spell spell : knightModel.getActiveSpells()) {
+            shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.CYAN);
+            shapeRenderer.rect(spell.getHitbox().x, spell.getHitbox().y,
+                spell.getHitbox().width, spell.getHitbox().height);
+        }
+
+        shapeRenderer.end();
 
         hudRenderer.render(spriteBatch, deltaSeconds);
 

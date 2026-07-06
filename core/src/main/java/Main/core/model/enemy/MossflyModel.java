@@ -12,7 +12,7 @@ public class MossflyModel extends EnemyModel {
 
     public MossflyModel(double startX, double startY) {
 
-        super(startX, startY, 48, 48, 3.0, 1.0);
+        super(startX, startY, 87, 87, 3.0, 1.0);
         changeState(new MossflyHoverState());
     }
 

@@ -115,6 +115,12 @@ public class EnemyRenderer {
             viewData.stateTime += deltaTime;
             TextureRegion currentFrame = determineFrame(enemy, currentState, viewData.stateTime);
 
+            float hitboxX = (float) enemy.getX();
+            float hitboxY = (float) enemy.getY();
+
+            float hitboxHeight = (float) enemy.getHeight();
+            float hitboxWidth = (float) enemy.getWidth();
+
             if (currentFrame != null) {
 
                 boolean shouldFaceRight = enemy.isFacingRight();
@@ -122,12 +128,18 @@ public class EnemyRenderer {
                     currentFrame.flip(true, false);
                 }
 
+                float regionWidth = currentFrame.getRegionWidth();
+                float regionHeight = currentFrame.getRegionHeight();
+
+                float renderX = hitboxX - (regionWidth - hitboxWidth) / 2.0f;
+                float renderY = hitboxY;
+
                 batch.draw(
                     currentFrame,
-                    (float) enemy.getX(),
-                    (float) enemy.getY(),
-                    (float) enemy.getWidth(),
-                    (float) enemy.getHeight()
+                    renderX,
+                    renderY,
+                    regionWidth,
+                    regionHeight
                 );
             }
         }

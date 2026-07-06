@@ -13,7 +13,7 @@ public class CrystalGuardianModel extends EnemyModel {
 
     public CrystalGuardianModel(double startX, double startY) {
 
-        super(startX, startY, 90, 110, 20.0, 2.0);
+        super(startX, startY, 95, 135, 20.0, 2.0);
         changeState(new GuardianIdleState());
     }
 

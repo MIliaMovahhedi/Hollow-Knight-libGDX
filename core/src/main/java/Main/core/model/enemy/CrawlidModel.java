@@ -12,7 +12,7 @@ public class CrawlidModel extends EnemyModel {
 
     public CrawlidModel(double startX, double startY) {
 
-        super(startX, startY, 64, 48, 2.0, 1.0);
+        super(startX, startY, 105, 80, 2.0, 1.0);
         changeState(new CrawlidPatrolState());
     }
 

@@ -187,11 +187,7 @@ public class KnightRenderer {
         float regionWidth = currentFrame.getRegionWidth();
         float regionHeight = currentFrame.getRegionHeight();
 
-        float visualScale = 1.2f;
-        float renderHeight = hitboxHeight * visualScale;
-        float renderWidth = renderHeight * (regionWidth / regionHeight);
-
-        float renderX = hitboxX - (renderWidth - hitboxWidth) / 2.0f;
+        float renderX = hitboxX - (regionWidth - hitboxWidth) / 2.0f;
         float renderY = hitboxY;
 
         if (knightModel.isInvincible()) {
@@ -199,7 +195,7 @@ public class KnightRenderer {
             applyBlinkingDamageEffect(spriteBatch);
         }
 
-        spriteBatch.draw(currentFrame, renderX, renderY, renderWidth, renderHeight);
+        spriteBatch.draw(currentFrame, renderX, renderY, regionWidth, regionHeight);
 
         spriteBatch.setColor(Color.WHITE);
     }
