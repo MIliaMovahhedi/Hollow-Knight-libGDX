@@ -55,7 +55,7 @@ public class KnightModel implements CharmObserver {
     private final int MAX_SOUL = 99;
     private final int SOUL_PER_HIT = 11;
     private final int SOUL_PER_ACTION = 33;
-    private final double ATTACK_RANGE = 40.0;
+    private final double ATTACK_RANGE = 150.0;
     private final double POGO_BOUNCE_SPEED = 750.0;
 
     private final int baseSoulPerHit = 11;

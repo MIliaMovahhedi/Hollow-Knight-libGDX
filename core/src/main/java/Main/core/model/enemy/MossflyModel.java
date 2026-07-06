@@ -2,6 +2,7 @@ package Main.core.model.enemy;
 
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.state.EnemyState;
+import Main.core.model.enemy.state.mossflyState.MossflyHiddenState;
 import Main.core.model.enemy.state.mossflyState.MossflyHoverState;
 import Main.core.model.knight.KnightModel;
 import com.badlogic.gdx.math.Rectangle;
@@ -13,7 +14,7 @@ public class MossflyModel extends EnemyModel {
     public MossflyModel(double startX, double startY) {
 
         super(startX, startY, 87, 87, 3.0, 1.0);
-        changeState(new MossflyHoverState());
+        changeState(new MossflyHiddenState());
     }
 
     @Override
@@ -26,6 +27,11 @@ public class MossflyModel extends EnemyModel {
             applyGravity(GRAVITY, deltaTime);
         }
         else if (currentState != null) {
+
+            if (currentState instanceof MossflyHiddenState) {
+
+                applyGravity(GRAVITY, deltaTime);
+            }
 
             EnemyState newState = currentState.update(this, knight, levelModel, deltaTime);
             if (newState != currentState) {

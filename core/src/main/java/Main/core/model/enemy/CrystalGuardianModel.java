@@ -49,6 +49,22 @@ public class CrystalGuardianModel extends EnemyModel {
 
     private void handlePhysicsBounds(double deltaTime, LevelModel levelModel) {
 
+        double nextX = this.x + (xVelocity * deltaTime);
+        bounds.setX((float) nextX);
+        for (Rectangle rect : levelModel.getGroundBounds()) {
+            if (bounds.overlaps(rect)) {
+                if (xVelocity > 0) {
+                    nextX = rect.getX() - bounds.getWidth();
+                } else if (xVelocity < 0) {
+                    nextX = rect.getX() + rect.getWidth();
+                }
+                xVelocity = 0;
+                bounds.setX((float) nextX);
+                break;
+            }
+        }
+        this.x = nextX;
+
         double nextY = this.y + (yVelocity * deltaTime);
         bounds.setY((float) nextY);
         isGrounded = false;

@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class MossflyHoverState implements EnemyState {
 
-    private final float SIGHT_RANGE = 400.0f;
+    private final float SIGHT_RANGE = 350.0f;
 
     @Override
     public void enter(EnemyModel enemy) {

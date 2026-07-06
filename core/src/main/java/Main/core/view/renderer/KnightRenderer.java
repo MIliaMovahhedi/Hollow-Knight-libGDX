@@ -184,8 +184,9 @@ public class KnightRenderer {
         float hitboxWidth = (float) knightModel.getWidth();
         float hitboxHeight = (float) knightModel.getHeight();
 
-        float regionWidth = currentFrame.getRegionWidth();
-        float regionHeight = currentFrame.getRegionHeight();
+        float visualScale = 1.2f;
+        float regionWidth = currentFrame.getRegionWidth() * visualScale;
+        float regionHeight = currentFrame.getRegionHeight() * visualScale;
 
         float renderX = hitboxX - (regionWidth - hitboxWidth) / 2.0f;
         float renderY = hitboxY;
@@ -267,7 +268,7 @@ public class KnightRenderer {
                     vfxFrame.flip(true, false);
                 }
 
-                float vfxX = facingRight ? x : x - vfxFrame.getRegionWidth() + (float) knightModel.getWidth();
+                float vfxX = facingRight ? x - 100 : x + 100 - vfxFrame.getRegionWidth() + (float) knightModel.getWidth();
                 batch.draw(vfxFrame, vfxX, y);
             }
         }

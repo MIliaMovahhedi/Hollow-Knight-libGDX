@@ -9,7 +9,7 @@ public class MossflyChargeState implements EnemyState {
 
     private final double targetX;
     private final double targetY;
-    private final double CHARGE_SPEED = 350.0;
+    private final double CHARGE_SPEED = 200.0;
     private final double ARRIVAL_THRESHOLD = 10.0;
 
     public MossflyChargeState(double targetX, double targetY) {

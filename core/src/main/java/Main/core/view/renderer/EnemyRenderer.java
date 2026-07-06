@@ -69,10 +69,10 @@ public class EnemyRenderer {
         crawlidDeathAir = new Animation<>(0.1f, crawlidAtlas.findRegions("Death Air"), Animation.PlayMode.LOOP);
         crawlidDeathLand = new Animation<>(0.1f, crawlidAtlas.findRegions("Death Land"), Animation.PlayMode.NORMAL);
 
-        mossflyShake = new Animation<>(0.1f, mossflyAtlas.findRegions("Shake"), Animation.PlayMode.LOOP);
+        mossflyShake = new Animation<>(0.4f, mossflyAtlas.findRegions("Shake"), Animation.PlayMode.LOOP);
         mossflyAppear = new Animation<>(0.1f, mossflyAtlas.findRegions("Appear"), Animation.PlayMode.NORMAL);
         mossflyTurnToFly = new Animation<>(0.1f, mossflyAtlas.findRegions("TurnToFly"), Animation.PlayMode.NORMAL);
-        mossflyFly = new Animation<>(0.05f, mossflyAtlas.findRegions("Fly"), Animation.PlayMode.LOOP);
+        mossflyFly = new Animation<>(0.1f, mossflyAtlas.findRegions("Fly"), Animation.PlayMode.LOOP);
         mossflyDeathAir = new Animation<>(0.1f, mossflyAtlas.findRegions("Death Air"), Animation.PlayMode.LOOP);
         mossflyDeathLand = new Animation<>(0.1f, mossflyAtlas.findRegions("Death Land"), Animation.PlayMode.NORMAL);
 
