@@ -184,7 +184,7 @@ public class KnightRenderer {
         float hitboxWidth = (float) knightModel.getWidth();
         float hitboxHeight = (float) knightModel.getHeight();
 
-        float visualScale = 1.2f;
+        float visualScale = 1f;
         float regionWidth = currentFrame.getRegionWidth() * visualScale;
         float regionHeight = currentFrame.getRegionHeight() * visualScale;
 

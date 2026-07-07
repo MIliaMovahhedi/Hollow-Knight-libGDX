@@ -2,6 +2,7 @@ package Main.core.model;
 
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.knight.KnightModel;
+import Main.core.model.zote.ZoteModel;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class LevelModel {
     private List<Rectangle> groundBounds;
     private List<Rectangle> hazardBounds;
     private List<EnemyModel> enemies;
+    private ZoteModel zote;
 
     public LevelModel() {
 
@@ -29,6 +31,9 @@ public class LevelModel {
     }
     public void addEnemy(EnemyModel enemy) {
         enemies.add(enemy);
+    }
+    public void addZote(ZoteModel zote) {
+        this.zote = zote;
     }
 
     public List<Rectangle> getGroundBounds() {
@@ -54,5 +59,12 @@ public class LevelModel {
                 iterator.remove();
             }
         }
+
+        zote.update((float) deltaTime, knight);
+    }
+
+    public ZoteModel getZote() {
+
+        return zote;
     }
 }

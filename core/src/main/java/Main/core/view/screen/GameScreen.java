@@ -5,11 +5,14 @@ import Main.core.model.enemy.*;
 import Main.core.model.enums.ScreenState;
 import Main.core.model.knight.KnightModel;
 import Main.core.model.LevelModel;
+import Main.core.model.zote.ZoteModel;
+import Main.core.model.zote.state.ZoteTalkingState;
 import Main.core.view.ScreenManager;
 import Main.core.view.renderer.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -27,6 +30,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 public class GameScreen extends MenuScreen {
 
     private ShapeRenderer shapeRenderer;
+    private BitmapFont gameFont;
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -40,6 +44,8 @@ public class GameScreen extends MenuScreen {
     private HUDRenderer hudRenderer;
     private SpellRenderer spellRenderer;
     private EnemyRenderer enemyRenderer;
+    private DialogueRenderer dialogueRenderer;
+    private ZoteRenderer zoteRenderer;
     private FalseKnightRenderer falseKnightRenderer;
 
     private TextureAtlas knightAtlas;
@@ -49,6 +55,7 @@ public class GameScreen extends MenuScreen {
     private TextureAtlas mossflyAtlas;
     private TextureAtlas huskAtlas;
     private TextureAtlas guardianAtlas;
+    private TextureAtlas zoteAtlas;
     private TextureAtlas falseKnightAtlas;
 
     private SpriteBatch spriteBatch;
@@ -76,6 +83,9 @@ public class GameScreen extends MenuScreen {
         }
 
         shapeRenderer = new ShapeRenderer();
+
+        gameFont = new BitmapFont(Gdx.files.internal("ui/trajan.fnt"));
+        dialogueRenderer = new DialogueRenderer(gameFont);
 
         accumulator = 0;
         fixedFrameRate = 120;
@@ -114,8 +124,10 @@ public class GameScreen extends MenuScreen {
         mossflyAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/mossfly.atlas"));
         huskAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/husk.atlas"));
         guardianAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/guardian.atlas"));
-
         enemyRenderer = new EnemyRenderer(crawlidAtlas, mossflyAtlas, huskAtlas, guardianAtlas);
+
+        zoteAtlas = new TextureAtlas(Gdx.files.internal("animations/npc_atlas/zote.atlas"));
+        zoteRenderer = new ZoteRenderer(zoteAtlas);
 
 //        falseKnightAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/falseKnight.atlas"));
 //        falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
@@ -175,6 +187,17 @@ public class GameScreen extends MenuScreen {
                 }
             }
         }
+
+        if (map.getLayers().get("Zote") != null) {
+
+            for (MapObject object : map.getLayers().get("Zote").getObjects()) {
+
+                float spawnX = object.getProperties().get("x", Float.class);
+                float spawnY = object.getProperties().get("y", Float.class);
+
+                levelModel.addZote(new ZoteModel(spawnX, spawnY));
+            }
+        }
     }
 
     @Override
@@ -189,7 +212,17 @@ public class GameScreen extends MenuScreen {
 
         if (!isPaused) {
 
-            controller.update();
+            boolean isZoteTalking = levelModel.getZote().getCurrentState() instanceof ZoteTalkingState;
+
+            if (!isZoteTalking) {
+
+                controller.update();
+            }
+            else {
+
+                knightModel.setXVelocity(0);
+            }
+
             updateGameLogic(deltaSeconds);
             renderGameGraphics(deltaSeconds);
         }
@@ -239,6 +272,8 @@ public class GameScreen extends MenuScreen {
         mossflyAtlas.dispose();
         huskAtlas.dispose();
         guardianAtlas.dispose();
+        zoteAtlas.dispose();
+        dialogueRenderer.dispose();
         super.dispose();
     }
 
@@ -254,6 +289,10 @@ public class GameScreen extends MenuScreen {
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) {
             isPaused = true;
             ScreenManager.getInstance().navigateTo(ScreenState.PAUSE_MENU);
+        }
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
+
+            levelModel.getZote().interact();
         }
     }
 
@@ -282,6 +321,8 @@ public class GameScreen extends MenuScreen {
         knightRenderer.render(spriteBatch, deltaSeconds);
         enemyRenderer.render(spriteBatch, levelModel, deltaSeconds);
         spellRenderer.render(spriteBatch, deltaSeconds);
+        zoteRenderer.render(spriteBatch, levelModel.getZote(), deltaSeconds);
+        dialogueRenderer.render(spriteBatch, levelModel.getZote(), deltaSeconds, camera);
         spriteBatch.end();
 
         hudRenderer.render(spriteBatch, deltaSeconds);
