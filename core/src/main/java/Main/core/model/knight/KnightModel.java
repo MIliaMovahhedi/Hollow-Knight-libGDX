@@ -620,4 +620,8 @@ public class KnightModel implements CharmObserver {
 
     public double getAttackDuration() { return currentAttackDuration; }
     public double getFocusDuration() { return currentFocusDuration; }
+
+    public CharmManager getCharmManager() {
+        return charmManager;
+    }
 }

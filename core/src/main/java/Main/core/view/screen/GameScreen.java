@@ -2,8 +2,10 @@ package Main.core.view.screen;
 
 import Main.core.controller.GameController;
 import Main.core.model.enemy.*;
+import Main.core.model.enums.ScreenState;
 import Main.core.model.knight.KnightModel;
 import Main.core.model.LevelModel;
+import Main.core.view.ScreenManager;
 import Main.core.view.renderer.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -55,6 +57,8 @@ public class GameScreen extends MenuScreen {
     private double fixedDeltaTime;
     private double accumulator;
 
+    private boolean isPaused = false;
+
 
     public GameScreen() {
         this.controller = new GameController();
@@ -62,7 +66,14 @@ public class GameScreen extends MenuScreen {
 
     @Override
     public void show() {
+
+        isPaused = false;
+
         super.show();
+
+        if (knightModel != null) {
+            return;
+        }
 
         shapeRenderer = new ShapeRenderer();
 
@@ -110,6 +121,9 @@ public class GameScreen extends MenuScreen {
 //        falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
     }
 
+    public KnightModel getKnightModel() {
+        return knightModel;
+    }
     private void loadCollisionLayer() {
 
         if (map.getLayers().get("Ground") != null) {
@@ -171,71 +185,17 @@ public class GameScreen extends MenuScreen {
     @Override
     public void render(float deltaSeconds) {
 
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        handleMenuInputs();
 
-        mapRenderer.setView(camera);
-        mapRenderer.render();
+        if (!isPaused) {
 
-        controller.update();
-
-        updateCamera(deltaSeconds);
-
-        mapRenderer.setView(camera);
-        mapRenderer.render();
-
-        spriteBatch.setProjectionMatrix(camera.combined);
-
-        spriteBatch.begin();
-        knightRenderer.render(spriteBatch, deltaSeconds);
-        enemyRenderer.render(spriteBatch, levelModel, deltaSeconds);
-        spellRenderer.render(spriteBatch, deltaSeconds);
-        spriteBatch.end();
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
-
-
-        shapeRenderer.rect((float) knightModel.getX(), (float) knightModel.getY(),
-            (float) knightModel.getWidth(), (float) knightModel.getHeight());
-
-        if (knightModel.getAttackHitbox() != null) {
-            
-            shapeRenderer.rect((float) knightModel.getAttackHitbox().x, (float) knightModel.getAttackHitbox().y,
-                (float) knightModel.getAttackHitbox().width, (float) knightModel.getAttackHitbox().height);
+            controller.update();
+            updateGameLogic(deltaSeconds);
+            renderGameGraphics(deltaSeconds);
         }
+        else {
 
-        for (EnemyModel enemy : levelModel.getEnemies()) {
-            shapeRenderer.rect((float) enemy.getX(), (float) enemy.getY(),
-                (float) enemy.getWidth(), (float) enemy.getHeight());
-
-
-            if (enemy instanceof CrystalGuardianModel boss && boss.getActiveLaserBounds() != null) {
-                shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.YELLOW);
-                shapeRenderer.rect(boss.getActiveLaserBounds().x, boss.getActiveLaserBounds().y,
-                    boss.getActiveLaserBounds().width, boss.getActiveLaserBounds().height);
-                shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
-            }
-        }
-
-        for (Main.core.model.knight.spell.Spell spell : knightModel.getActiveSpells()) {
-            shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.CYAN);
-            shapeRenderer.rect(spell.getHitbox().x, spell.getHitbox().y,
-                spell.getHitbox().width, spell.getHitbox().height);
-        }
-
-        shapeRenderer.end();
-
-        hudRenderer.render(spriteBatch, deltaSeconds);
-
-        accumulator += deltaSeconds;
-
-        while (accumulator >= fixedDeltaTime) {
-
-            accumulator -= fixedDeltaTime;
-            knightModel.update(controller, levelModel, fixedDeltaTime);
-            levelModel.updateEnemies(fixedDeltaTime, knightModel);
+            renderGameGraphics(0);
         }
     }
 
@@ -280,5 +240,54 @@ public class GameScreen extends MenuScreen {
         huskAtlas.dispose();
         guardianAtlas.dispose();
         super.dispose();
+    }
+
+    public void setPaused(boolean paused) {
+        this.isPaused = paused;
+    }
+
+    private void handleMenuInputs() {
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.I)) {
+            isPaused = true;
+            ScreenManager.getInstance().navigateTo(ScreenState.INVENTORY_MENU);
+        }
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) {
+            isPaused = true;
+            ScreenManager.getInstance().navigateTo(ScreenState.PAUSE_MENU);
+        }
+    }
+
+    private void updateGameLogic(float deltaSeconds) {
+        accumulator += deltaSeconds;
+
+        while (accumulator >= fixedDeltaTime) {
+            accumulator -= fixedDeltaTime;
+            knightModel.update(controller, levelModel, fixedDeltaTime);
+            levelModel.updateEnemies(fixedDeltaTime, knightModel);
+        }
+
+        updateCamera(deltaSeconds);
+    }
+
+    public void renderGameGraphics(float deltaSeconds) {
+
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT);
+
+        mapRenderer.setView(camera);
+        mapRenderer.render();
+
+        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.begin();
+        knightRenderer.render(spriteBatch, deltaSeconds);
+        enemyRenderer.render(spriteBatch, levelModel, deltaSeconds);
+        spellRenderer.render(spriteBatch, deltaSeconds);
+        spriteBatch.end();
+
+        hudRenderer.render(spriteBatch, deltaSeconds);
+    }
+
+    public void resetGameSession() {
+        this.knightModel = null;
     }
 }

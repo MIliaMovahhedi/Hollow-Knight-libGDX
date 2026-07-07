@@ -32,7 +32,7 @@ public abstract class MenuScreen implements Screen, Translatable {
 
     protected void initializeSkin() {
 
-        skin = new Skin(Gdx.files.internal("ui/Hollow Knight skin.json"));
+        skin = new Skin(Gdx.files.internal("ui/hollowNightSkin.json"));
     }
     protected void addButtonsAndListeners() {
     }

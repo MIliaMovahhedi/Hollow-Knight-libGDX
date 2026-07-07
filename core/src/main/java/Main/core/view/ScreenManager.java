@@ -50,4 +50,9 @@ public class ScreenManager {
             case GAME_MENU -> new GameScreen();
         };
     }
+
+    public Screen getCachedScreen(ScreenState screenState) {
+
+        return screens.get(screenState);
+    }
 }
