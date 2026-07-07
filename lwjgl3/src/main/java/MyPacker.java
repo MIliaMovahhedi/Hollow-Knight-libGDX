@@ -47,5 +47,11 @@ public class MyPacker {
             "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\enemies_atlas",
             "guardian"
         );
+
+        TexturePacker.process(settings,
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\raw_zote_frames",
+            "C:\\Users\\Asus\\Desktop\\UNI\\Term2\\Advanced Programming\\P4\\assets\\animations\\npc_atlas",
+            "zote"
+        );
     }
 }
