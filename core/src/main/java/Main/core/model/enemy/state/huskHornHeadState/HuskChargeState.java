@@ -1,5 +1,6 @@
 package Main.core.model.enemy.state.huskHornHeadState;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.state.EnemyState;
@@ -13,16 +14,33 @@ public class HuskChargeState implements EnemyState {
     private final double CHARGE_SPEED = 350.0;
     private boolean isCharging = false;
 
+    private long runSoundId;
+    private final float MAX_HEARING_DISTANCE = 800.0f;
+
     @Override
     public void enter(EnemyModel enemy) {
+
         enemy.setXVelocity(0);
         timer = 0.0;
         isCharging = false;
+
+        runSoundId = AudioManager.getInstance().loopSpatialSfx(
+            AudioManager.getInstance().huskAttackSound,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
     }
 
     @Override
     public EnemyState update(EnemyModel enemy, KnightModel knightModel, LevelModel levelModel, double deltaTime) {
         timer += deltaTime;
+
+        AudioManager.getInstance().updateLoopVolume(
+            AudioManager.getInstance().crawlidCrawlSound,
+            runSoundId,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
 
         if (!isCharging) {
 
@@ -46,5 +64,6 @@ public class HuskChargeState implements EnemyState {
     public void exit(EnemyModel enemy) {
 
         enemy.setXVelocity(0);
+        AudioManager.getInstance().stopSfx(AudioManager.getInstance().huskAttackSound);
     }
 }

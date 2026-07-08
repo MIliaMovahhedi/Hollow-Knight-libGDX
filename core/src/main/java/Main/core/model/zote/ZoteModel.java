@@ -1,8 +1,10 @@
 package Main.core.model.zote;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.knight.KnightModel;
 import Main.core.model.zote.state.ZoteIdleState;
 import Main.core.model.zote.state.ZoteState;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
 public class ZoteModel {
@@ -11,6 +13,8 @@ public class ZoteModel {
     private float coordinateY;
     private float width;
     private float height;
+
+    private float distanceToPlayer;
 
     private float interactionRadius;
     private Rectangle interactionBounds;
@@ -31,12 +35,14 @@ public class ZoteModel {
         this.interactionBounds = new Rectangle();
         this.dialogueIndex = 0;
         this.isPreceptMode = false;
-        this.currentState = new ZoteIdleState();
+        changeState(new ZoteIdleState());
         updateInteractionBounds();
     }
 
     public void update(float deltaTime, KnightModel knight) {
+
         checkProximity(knight);
+        calculateDistance(knight);
         currentState.update(this, deltaTime);
     }
 
@@ -71,6 +77,11 @@ public class ZoteModel {
 
     public void changeState(ZoteState newState) {
 
+        if (currentState != null) {
+
+            this.currentState.exit(this);
+        }
+
         this.currentState = newState;
         this.currentState.enter(this);
     }
@@ -86,6 +97,9 @@ public class ZoteModel {
                 dialogueIndex = 0;
                 changeState(new ZoteIdleState());
             }
+
+            int randomIndex = MathUtils.random(0, 4);
+            AudioManager.getInstance().playSfx(AudioManager.getInstance().zoteTalkingSounds[randomIndex]);
         }
         else {
 
@@ -115,5 +129,15 @@ public class ZoteModel {
     }
     public ZoteState getCurrentState() {
         return currentState;
+    }
+
+    private void calculateDistance(KnightModel knight) {
+        float dx = this.coordinateX - (float) knight.getX();
+        float dy = this.coordinateY - (float) knight.getY();
+        this.distanceToPlayer = (float) Math.sqrt((dx * dx) + (dy * dy));
+    }
+
+    public float getDistanceToPlayer() {
+        return distanceToPlayer;
     }
 }

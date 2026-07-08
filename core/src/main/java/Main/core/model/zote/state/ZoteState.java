@@ -7,4 +7,5 @@ public interface ZoteState {
     void enter(ZoteModel zote);
     void update(ZoteModel zote, float deltaTime);
     void interact(ZoteModel zote);
+    void exit(ZoteModel zote);
 }

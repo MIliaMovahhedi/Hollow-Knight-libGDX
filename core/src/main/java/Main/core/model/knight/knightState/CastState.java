@@ -1,6 +1,7 @@
 package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.knight.KnightModel;
 
 public class CastState implements KnightState {
@@ -18,6 +19,8 @@ public class CastState implements KnightState {
     public void enter(KnightModel knight) {
 
         castTimer = 0.0;
+
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().screamSpellSound);
 
         if (isUpwardCast) {
 
@@ -45,6 +48,11 @@ public class CastState implements KnightState {
         }
 
         return this;
+    }
+
+    @Override
+    public void exit(KnightModel knight) {
+
     }
 
     @Override

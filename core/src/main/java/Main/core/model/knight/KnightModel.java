@@ -1,6 +1,7 @@
 package Main.core.model.knight;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.charm.Charm;
 import Main.core.model.charm.CharmManager;
@@ -195,6 +196,8 @@ public class KnightModel implements CharmObserver {
 
         isOnHurt = true;
 
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().knightDamageSound);
+
         currentHealth -= incomingDamage;
         if (currentHealth <= 0) {
 
@@ -233,6 +236,12 @@ public class KnightModel implements CharmObserver {
         return maxHealth;
     }
     public void addSoul() {
+
+        if (currentSoul + SOUL_PER_HIT <= MAX_SOUL) {
+
+            AudioManager.getInstance().playScaledSfx(AudioManager.getInstance().soulCollectSound, 0.3f);
+        }
+
         currentSoul = Math.min(currentSoul + SOUL_PER_HIT, MAX_SOUL);
     }
     public boolean consumeSoul() {
@@ -248,6 +257,7 @@ public class KnightModel implements CharmObserver {
 
         if (currentHealth < maxHealth) {
 
+            AudioManager.getInstance().playSfx(AudioManager.getInstance().focusGetSound);
             currentHealth++;
         }
     }
@@ -266,6 +276,7 @@ public class KnightModel implements CharmObserver {
     }
 
     public void setKnightState(KnightState knightState) {
+        this.knightState.exit(this);
         this.knightState = knightState;
         knightState.enter(this);
     }
@@ -481,6 +492,7 @@ public class KnightModel implements CharmObserver {
     }
     private void applyPogoBounce() {
 
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().pogoSound);
         yVelocity = POGO_BOUNCE_SPEED;
         canDash = true;
         canDoubleJump = true;

@@ -1,6 +1,7 @@
 package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.knight.KnightModel;
 
 public class FocusState implements KnightState {
@@ -12,6 +13,9 @@ public class FocusState implements KnightState {
 
         focusTimer = 0.0;
         knight.setXVelocity(0.0);
+
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().focusReadySound);
+        AudioManager.getInstance().loopSfx(AudioManager.getInstance().focusSound);
     }
 
     @Override
@@ -33,5 +37,11 @@ public class FocusState implements KnightState {
         }
 
         return this;
+    }
+
+    @Override
+    public void exit(KnightModel knight) {
+
+        AudioManager.getInstance().stopSfx(AudioManager.getInstance().focusSound);
     }
 }

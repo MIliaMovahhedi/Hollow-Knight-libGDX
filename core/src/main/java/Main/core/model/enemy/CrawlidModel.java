@@ -21,6 +21,7 @@ public class CrawlidModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
+        calculateDistanceToPlayer(knightModel);
 
         if (currentState != null && !isDead()) {
 

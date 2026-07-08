@@ -31,4 +31,9 @@ public class FocusEndState implements KnightState{
         }
         return this;
     }
+
+    @Override
+    public void exit(KnightModel knight) {
+
+    }
 }

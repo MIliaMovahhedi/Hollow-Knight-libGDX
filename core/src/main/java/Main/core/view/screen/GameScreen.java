@@ -1,6 +1,7 @@
 package Main.core.view.screen;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.enemy.*;
 import Main.core.model.enums.ScreenState;
 import Main.core.model.knight.KnightModel;
@@ -91,6 +92,7 @@ public class GameScreen extends MenuScreen {
         fixedFrameRate = 120;
         fixedDeltaTime = (double) 1 / fixedFrameRate;
 
+        AudioManager.getInstance().playMusic(AudioManager.getInstance().crossroadsMusic, true);
         map = new TmxMapLoader().load("maps/Forgotten-Crossroad-Map.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
@@ -207,6 +209,8 @@ public class GameScreen extends MenuScreen {
 
     @Override
     public void render(float deltaSeconds) {
+
+        AudioManager.getInstance().update(deltaSeconds);
 
         handleMenuInputs();
 

@@ -22,6 +22,8 @@ public class MossflyModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
+        calculateDistanceToPlayer(knight);
+
         if (isDead()) {
 
             applyGravity(GRAVITY, deltaTime);

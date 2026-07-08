@@ -1,5 +1,6 @@
 package Main.core.model.enemy.state.crystalGuardianState;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.state.EnemyState;
@@ -15,6 +16,9 @@ public class GuardianEnragedState implements EnemyState {
     private double enragedTimer;
     private double cooldownTimer = 0.0;
 
+    private long runSoundId;
+    private final float MAX_HEARING_DISTANCE = 800.0f;
+
     public GuardianEnragedState(double remainingEnrageTime) {
 
         this.enragedTimer = remainingEnrageTime;
@@ -25,6 +29,12 @@ public class GuardianEnragedState implements EnemyState {
 
         enemy.setXVelocity(0);
         cooldownTimer = 0.0;
+
+        runSoundId = AudioManager.getInstance().loopSpatialSfx(
+            AudioManager.getInstance().guardianRunSound,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
     }
 
     @Override
@@ -32,6 +42,13 @@ public class GuardianEnragedState implements EnemyState {
 
         enragedTimer -= deltaTime;
         cooldownTimer += deltaTime;
+
+        AudioManager.getInstance().updateLoopVolume(
+            AudioManager.getInstance().crawlidCrawlSound,
+            runSoundId,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
 
         if (enragedTimer <= 0) {
 
@@ -62,6 +79,7 @@ public class GuardianEnragedState implements EnemyState {
     @Override
     public void exit(EnemyModel enemy) {
 
+        AudioManager.getInstance().stopSfx(AudioManager.getInstance().guardianRunSound);
     }
 
     private boolean seesKnight(EnemyModel enemy, KnightModel knight) {

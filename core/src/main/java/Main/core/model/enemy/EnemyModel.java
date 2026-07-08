@@ -1,5 +1,6 @@
 package Main.core.model.enemy;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.state.EnemyState;
 import Main.core.model.knight.KnightModel;
@@ -9,6 +10,8 @@ public abstract class EnemyModel {
 
     protected double x;
     protected double y;
+
+    protected float distanceToPlayer;
 
     protected double width;
     protected double height;
@@ -69,6 +72,8 @@ public abstract class EnemyModel {
     }
 
     public void takeDamage(double amount) {
+
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().enemyDamageSound);
         this.health -= amount;
     }
     public boolean isDead() {
@@ -91,5 +96,14 @@ public abstract class EnemyModel {
     public double getDamageAmount() { return damageAmount; }
     public EnemyState getCurrentState() {
         return currentState;
+    }
+
+    public void calculateDistanceToPlayer(KnightModel knight) {
+        float dx = (float) (this.x - knight.getX());
+        float dy = (float) (this.y - knight.getY());
+        this.distanceToPlayer = (float) Math.sqrt((dx * dx) + (dy * dy));
+    }
+    public float getDistanceToPlayer() {
+        return distanceToPlayer;
     }
 }

@@ -1,12 +1,16 @@
 package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.knight.KnightModel;
 
 public class FallState implements KnightState {
 
     @Override
-    public void enter(KnightModel knight) {}
+    public void enter(KnightModel knight) {
+
+        AudioManager.getInstance().loopSfx(AudioManager.getInstance().fallSound);
+    }
 
     @Override
     public KnightState update(KnightModel knight, GameController gameController, double deltaTime) {
@@ -50,5 +54,11 @@ public class FallState implements KnightState {
         }
 
         return this;
+    }
+
+    @Override
+    public void exit(KnightModel knight) {
+
+        AudioManager.getInstance().stopSfx(AudioManager.getInstance().fallSound);
     }
 }

@@ -1,5 +1,6 @@
 package Main.core.model.enemy.state.mossflyState;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.state.EnemyState;
@@ -17,6 +18,7 @@ public class MossflyEmergeState implements EnemyState {
 
         enemy.setXVelocity(0);
         enemy.setYVelocity(EMERGE_SPEED_Y);
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().mossflyEmergeSound);
     }
 
     @Override

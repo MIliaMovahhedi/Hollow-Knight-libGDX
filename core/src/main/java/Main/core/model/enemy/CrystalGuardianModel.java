@@ -22,6 +22,8 @@ public class CrystalGuardianModel extends EnemyModel {
 
         updateDeath(deltaTime);
 
+        calculateDistanceToPlayer(knightModel);
+
         if (isDead()) {
 
             setActiveLaserBounds(null);

@@ -1,6 +1,7 @@
 package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.knight.KnightModel;
 
 public class JumpState implements KnightState {
@@ -17,6 +18,7 @@ public class JumpState implements KnightState {
     @Override
     public void enter(KnightModel knight) {
 
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().jumpSound);
         knight.setYVelocity(knight.getMaxJumpSpeed());
         knight.setGrounded(false);
     }
@@ -67,5 +69,10 @@ public class JumpState implements KnightState {
         }
 
         return this;
+    }
+
+    @Override
+    public void exit(KnightModel knight) {
+
     }
 }

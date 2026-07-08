@@ -1,5 +1,6 @@
 package Main.core.model.enemy.state.mossflyState;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.state.EnemyState;
@@ -10,15 +11,31 @@ public class MossflyHoverState implements EnemyState {
 
     private final float SIGHT_RANGE = 350.0f;
 
+    private long chargeSoundId;
+    private final float MAX_HEARING_DISTANCE = 800.0f;
+
     @Override
     public void enter(EnemyModel enemy) {
 
         enemy.setXVelocity(0);
         enemy.setYVelocity(0);
+
+        chargeSoundId = AudioManager.getInstance().loopSpatialSfx(
+            AudioManager.getInstance().mossflyFlySound,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
     }
 
     @Override
     public EnemyState update(EnemyModel enemy, KnightModel knightModel, LevelModel levelModel, double deltaTime) {
+
+        AudioManager.getInstance().updateLoopVolume(
+            AudioManager.getInstance().crawlidCrawlSound,
+            chargeSoundId,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
 
         Rectangle lineOfSight = new Rectangle(
 
@@ -47,5 +64,6 @@ public class MossflyHoverState implements EnemyState {
     @Override
     public void exit(EnemyModel enemy) {
 
+        AudioManager.getInstance().stopSfx(AudioManager.getInstance().mossflyFlySound);
     }
 }

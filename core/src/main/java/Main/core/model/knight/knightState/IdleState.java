@@ -29,4 +29,9 @@ public class IdleState implements KnightState {
 
         return this;
     }
+
+    @Override
+    public void exit(KnightModel knight) {
+
+    }
 }

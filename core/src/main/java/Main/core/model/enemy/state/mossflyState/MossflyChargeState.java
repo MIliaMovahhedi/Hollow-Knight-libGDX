@@ -1,5 +1,6 @@
 package Main.core.model.enemy.state.mossflyState;
 
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.state.EnemyState;
@@ -12,6 +13,9 @@ public class MossflyChargeState implements EnemyState {
     private final double CHARGE_SPEED = 200.0;
     private final double ARRIVAL_THRESHOLD = 10.0;
 
+    private long chargeSoundId;
+    private final float MAX_HEARING_DISTANCE = 800.0f;
+
     public MossflyChargeState(double targetX, double targetY) {
 
         this.targetX = targetX;
@@ -20,6 +24,12 @@ public class MossflyChargeState implements EnemyState {
 
     @Override
     public void enter(EnemyModel enemy) {
+
+        chargeSoundId = AudioManager.getInstance().loopSpatialSfx(
+            AudioManager.getInstance().mossflyFlySound,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
 
         double deltaX = targetX - enemy.getX();
         double deltaY = targetY - enemy.getY();
@@ -37,6 +47,13 @@ public class MossflyChargeState implements EnemyState {
 
     @Override
     public EnemyState update(EnemyModel enemy, KnightModel knightModel, LevelModel levelModel, double deltaTime) {
+
+        AudioManager.getInstance().updateLoopVolume(
+            AudioManager.getInstance().crawlidCrawlSound,
+            chargeSoundId,
+            enemy.getDistanceToPlayer(),
+            MAX_HEARING_DISTANCE
+        );
 
         double currentDeltaX = targetX - enemy.getX();
         double currentDeltaY = targetY - enemy.getY();
@@ -57,5 +74,7 @@ public class MossflyChargeState implements EnemyState {
 
         enemy.setXVelocity(0);
         enemy.setYVelocity(0);
+
+        AudioManager.getInstance().stopSfx(AudioManager.getInstance().mossflyFlySound);
     }
 }

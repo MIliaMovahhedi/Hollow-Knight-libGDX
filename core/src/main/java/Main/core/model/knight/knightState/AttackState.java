@@ -1,6 +1,7 @@
 package Main.core.model.knight.knightState;
 
 import Main.core.controller.GameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.knight.KnightModel;
 
 public class AttackState implements KnightState{
@@ -16,6 +17,7 @@ public class AttackState implements KnightState{
     public void enter(KnightModel knight) {
 
         timer = 0.0;
+        AudioManager.getInstance().playSfx(AudioManager.getInstance().jumpSound);
     }
 
     @Override
@@ -32,6 +34,11 @@ public class AttackState implements KnightState{
             return new IdleState();
         }
         return this;
+    }
+
+    @Override
+    public void exit(KnightModel knight) {
+
     }
 
     public boolean isDownAttack() {
