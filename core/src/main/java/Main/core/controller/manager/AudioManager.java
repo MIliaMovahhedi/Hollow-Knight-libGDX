@@ -41,6 +41,12 @@ public class AudioManager {
 
     public final Music crossroadsMusic;
     public final Music greenpathMusic;
+    public final Music menuMusic;
+
+    private float preMuteMusicVolume = 1.0f;
+    private float preMuteSfxVolume = 1.0f;
+    private boolean isMusicMuted = false;
+    private boolean isSfxMuted = false;
 
     private AudioManager() {
 
@@ -83,6 +89,7 @@ public class AudioManager {
 
         this.crossroadsMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/S19 Crossroads Main.wav"));
         this.greenpathMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/S5 Green Path Main.wav"));
+        this.menuMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/Hollow Knight.mp3"));
     }
 
     public static AudioManager getInstance() {
@@ -122,6 +129,33 @@ public class AudioManager {
             currentMusic = nextMusic;
             nextMusic = null;
         }
+    }
+
+    public void toggleMusicMute() {
+        isMusicMuted = !isMusicMuted;
+        if (isMusicMuted) {
+            preMuteMusicVolume = musicVolume;
+            setMusicVolume(0f);
+        } else {
+            setMusicVolume(preMuteMusicVolume > 0f ? preMuteMusicVolume : 1.0f);
+        }
+    }
+
+    public void toggleSfxMute() {
+        isSfxMuted = !isSfxMuted;
+        if (isSfxMuted) {
+            preMuteSfxVolume = sfxVolume;
+            setSfxVolume(0f);
+        } else {
+            setSfxVolume(preMuteSfxVolume > 0f ? preMuteSfxVolume : 1.0f);
+        }
+    }
+
+    public void resetAudioSettings() {
+        isMusicMuted = false;
+        isSfxMuted = false;
+        setMusicVolume(1.0f);
+        setSfxVolume(1.0f);
     }
 
     public void playSfx(Sound sound) {
@@ -179,6 +213,10 @@ public class AudioManager {
 
     public void setMusicVolume(float volume) {
         this.musicVolume = Math.max(0f, Math.min(volume, 1.0f));
+
+        if (currentMusic != null && !isFading) {
+            currentMusic.setVolume(this.musicVolume);
+        }
     }
 
     public float getMusicVolume() {

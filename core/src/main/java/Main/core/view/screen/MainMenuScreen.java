@@ -1,7 +1,9 @@
 package Main.core.view.screen;
 
 import Main.core.controller.MainMenuController;
+import Main.core.controller.manager.AudioManager;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -9,23 +11,41 @@ import com.badlogic.gdx.utils.I18NBundle;
 public class MainMenuScreen extends MenuScreen {
 
     private final MainMenuController controller;
+    private Image gameLogo;
     private TextButton startGameButton;
     private TextButton settingsButton;
     private TextButton guideButton;
-    private TextButton AchievementButton;
+    private TextButton achievementButton;
     private TextButton quitGameButton;
 
     public MainMenuScreen() {
         controller = new MainMenuController();
     }
 
+
+    @Override
+    public void show() {
+        super.show();
+        AudioManager.getInstance().playMusic(AudioManager.getInstance().menuMusic, true);
+    }
+
+    @Override
+    protected void createTableLayout() {
+        table.setFillParent(true);
+        table.setBackground(skin.getDrawable("main_menu_bg"));
+        table.center();
+        stage.addActor(table);
+    }
+
     @Override
     protected void addButtonsAndListeners() {
+
+        gameLogo = new Image(skin.getDrawable("game_logo"));
 
         startGameButton = new TextButton("Start Game", skin);
         settingsButton = new TextButton("Settings", skin);
         guideButton = new TextButton("Guide", skin);
-        AchievementButton = new TextButton("Achievement", skin);
+        achievementButton = new TextButton("Achievement", skin);
         quitGameButton = new TextButton("Quit Game", skin);
 
         startGameButton.addListener(new ClickListener() {
@@ -46,7 +66,7 @@ public class MainMenuScreen extends MenuScreen {
                 controller.goToGuideMenu();
             }
         });
-        AchievementButton.addListener(new ClickListener() {
+        achievementButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float coordinateX, float coordinateY) {
                 controller.goToAchievementMenu();
@@ -59,15 +79,12 @@ public class MainMenuScreen extends MenuScreen {
             }
         });
 
-        table.add(startGameButton).spaceBottom(15).uniformX();
-        table.row();
-        table.add(settingsButton).spaceBottom(15).uniformX();
-        table.row();
-        table.add(guideButton).spaceBottom(15).uniformX();
-        table.row();
-        table.add(AchievementButton).spaceBottom(15).uniformX();
-        table.row();
-        table.add(quitGameButton).spaceBottom(15).uniformX();
+        table.add(gameLogo).spaceBottom(20).row();
+        table.add(startGameButton).spaceBottom(15).uniformX().row();
+        table.add(settingsButton).spaceBottom(15).uniformX().row();
+        table.add(guideButton).spaceBottom(15).uniformX().row();
+        table.add(achievementButton).spaceBottom(15).uniformX().row();
+        table.add(quitGameButton).spaceBottom(15).uniformX().row();
     }
 
     @Override
@@ -76,7 +93,7 @@ public class MainMenuScreen extends MenuScreen {
         startGameButton.setText(bundle.get("menu.startGame"));
         settingsButton.setText(bundle.get("menu.settings"));
         guideButton.setText(bundle.get("menu.guide"));
-        AchievementButton.setText(bundle.get("menu.achievements"));
+        achievementButton.setText(bundle.get("menu.achievements"));
         quitGameButton.setText(bundle.get("menu.quitGame"));
     }
 }

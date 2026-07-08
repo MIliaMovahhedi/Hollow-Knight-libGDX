@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public abstract class MenuScreen implements Screen, Translatable {
@@ -19,7 +20,7 @@ public abstract class MenuScreen implements Screen, Translatable {
     @Override
     public void show() {
 
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new FitViewport(1920, 1080));
         table = new Table();
 
         initializeSkin();
@@ -52,13 +53,14 @@ public abstract class MenuScreen implements Screen, Translatable {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        Main.core.controller.manager.AudioManager.getInstance().update(deltaSeconds);
+
         stage.act(deltaSeconds);
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-
         stage.getViewport().update(width, height, true);
     }
 

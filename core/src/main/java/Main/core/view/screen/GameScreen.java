@@ -27,6 +27,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.I18NBundle;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class GameScreen extends MenuScreen {
 
@@ -67,6 +68,8 @@ public class GameScreen extends MenuScreen {
 
     private boolean isPaused = false;
 
+    private FitViewport viewport;
+
 
     public GameScreen() {
         this.controller = new GameController();
@@ -95,10 +98,12 @@ public class GameScreen extends MenuScreen {
         AudioManager.getInstance().playMusic(AudioManager.getInstance().crossroadsMusic, true);
         map = new TmxMapLoader().load("maps/Forgotten-Crossroad-Map.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
-        camera = new OrthographicCamera();
         levelModel = new LevelModel();
 
-        camera.setToOrtho(false, 1920, 1080);
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(1920, 1080, camera);
+        viewport.apply();
+
 
         loadCollisionLayer();
 
@@ -203,6 +208,13 @@ public class GameScreen extends MenuScreen {
     }
 
     @Override
+    public void resize(int width, int height) {
+
+        super.resize(width, height);
+        viewport.update(width, height, true);
+    }
+
+    @Override
     public void onLanguageChanged(I18NBundle bundle) {
 
     }
@@ -255,8 +267,8 @@ public class GameScreen extends MenuScreen {
         int mapPixelWidth = mapWidth * tilePixelWidth;
         int mapPixelHeight = mapHeight * tilePixelHeight;
 
-        float cameraHalfWidth = camera.viewportWidth * 0.5f;
-        float cameraHalfHeight = camera.viewportHeight * 0.5f;
+        float cameraHalfWidth = viewport.getWorldWidth() * 0.5f;
+        float cameraHalfHeight = viewport.getWorldHeight() * 0.5f;
 
         camera.position.x = MathUtils.clamp(camera.position.x, cameraHalfWidth, mapPixelWidth - cameraHalfWidth);
         camera.position.y = MathUtils.clamp(camera.position.y, cameraHalfHeight, mapPixelHeight - cameraHalfHeight);
