@@ -1,5 +1,6 @@
 package Main.core.model.enemy.boss;
 
+import Main.core.model.GameState;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
 import Main.core.model.enemy.boss.state.*;
@@ -81,9 +82,17 @@ public class FalseKnightModel extends EnemyModel {
     public void takeDamage(double amount) {
 
         if (this.currentState instanceof StunState) {
+
             super.takeDamage(amount * 2.0);
-        } else {
+        }
+        else {
+
             super.takeDamage(amount);
+        }
+
+        if (isDead()) {
+            GameState.getInstance().getGameStats().setFalseKnightDefeated(true);
+            GameState.getInstance().getGameStats().setGameCompleted(true);
         }
 
         hurtTimer = 0.2;

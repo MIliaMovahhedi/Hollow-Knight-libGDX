@@ -36,8 +36,6 @@ public class HUDRenderer {
     private final Animation<TextureRegion> maskRefillAnim;
 
     private final TextureRegion soulOrbFull;
-    private final TextureRegion soulOrbHalf;
-    private final TextureRegion soulOrbEmpty;
 
     private final List<MaskData> masks;
     private int previousHealth;
@@ -55,13 +53,11 @@ public class HUDRenderer {
         this.maskFull = atlas.findRegion("FilledHealth");
         this.maskEmpty = atlas.findRegion("EmptyHealth");
 
-        this.maskShineAnim = new Animation<>(0.1f, atlas.findRegions("FilledHealthShine"), Animation.PlayMode.LOOP);
+        this.maskShineAnim = new Animation<>(0.1f, atlas.findRegions("FilledHealthShine"), Animation.PlayMode.NORMAL);
         this.maskBreakAnim = new Animation<>(0.05f, atlas.findRegions("BreakHealth"), Animation.PlayMode.NORMAL);
         this.maskRefillAnim = new Animation<>(0.1f, atlas.findRegions("HealthRefill"), Animation.PlayMode.NORMAL);
 
         this.soulOrbFull = atlas.findRegion("SoulOrb_Full");
-        this.soulOrbHalf = atlas.findRegion("SoulOrb_Half");
-        this.soulOrbEmpty = atlas.findRegion("SoulOrb_Empty");
 
         this.masks = new ArrayList<>();
         this.previousHealth = (int) knightModel.getMaxHealth();

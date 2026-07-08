@@ -1,6 +1,7 @@
 package Main.core.model.enemy;
 
 import Main.core.controller.manager.AudioManager;
+import Main.core.model.GameState;
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.state.EnemyState;
 import Main.core.model.knight.KnightModel;
@@ -75,6 +76,12 @@ public abstract class EnemyModel {
 
         AudioManager.getInstance().playSfx(AudioManager.getInstance().enemyDamageSound);
         this.health -= amount;
+
+        if (isDead()) {
+
+            GameState.getInstance().getGameStats().incrementTotalKills();
+            GameState.getInstance().getGameStats().addDefeatedEnemyType(this.getClass().getSimpleName());
+        }
     }
     public boolean isDead() {
         return this.health <= 0;

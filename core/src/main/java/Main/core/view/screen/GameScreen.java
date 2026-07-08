@@ -2,6 +2,8 @@ package Main.core.view.screen;
 
 import Main.core.controller.GameController;
 import Main.core.controller.manager.AudioManager;
+import Main.core.model.GameState;
+import Main.core.model.achievement.AchievementManager;
 import Main.core.model.enemy.*;
 import Main.core.model.enums.ScreenState;
 import Main.core.model.knight.KnightModel;
@@ -69,6 +71,7 @@ public class GameScreen extends MenuScreen {
     private boolean isPaused = false;
 
     private FitViewport viewport;
+    private AchievementPopupManager achievementPopupManager;
 
 
     public GameScreen() {
@@ -138,6 +141,9 @@ public class GameScreen extends MenuScreen {
 
 //        falseKnightAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/falseKnight.atlas"));
 //        falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
+
+        achievementPopupManager = new AchievementPopupManager();
+        AchievementManager.getInstance().addObserver(achievementPopupManager);
     }
 
     public KnightModel getKnightModel() {
@@ -212,6 +218,10 @@ public class GameScreen extends MenuScreen {
 
         super.resize(width, height);
         viewport.update(width, height, true);
+
+        if (achievementPopupManager != null) {
+            achievementPopupManager.resize(width, height);
+        }
     }
 
     @Override
@@ -290,6 +300,8 @@ public class GameScreen extends MenuScreen {
         guardianAtlas.dispose();
         zoteAtlas.dispose();
         dialogueRenderer.dispose();
+        AchievementManager.getInstance().removeObserver(achievementPopupManager);
+        achievementPopupManager.dispose();
         super.dispose();
     }
 
@@ -313,6 +325,10 @@ public class GameScreen extends MenuScreen {
     }
 
     private void updateGameLogic(float deltaSeconds) {
+
+        GameState.getInstance().getGameStats().addPlayTime(deltaSeconds);
+        Main.core.model.achievement.AchievementManager.getInstance().evaluateAchievements(GameState.getInstance().getGameStats());
+
         accumulator += deltaSeconds;
 
         while (accumulator >= fixedDeltaTime) {
@@ -342,6 +358,7 @@ public class GameScreen extends MenuScreen {
         spriteBatch.end();
 
         hudRenderer.render(spriteBatch, deltaSeconds);
+        achievementPopupManager.render(deltaSeconds);
     }
 
     public void resetGameSession() {

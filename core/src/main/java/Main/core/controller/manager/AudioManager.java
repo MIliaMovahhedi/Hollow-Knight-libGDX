@@ -36,6 +36,7 @@ public class AudioManager {
     public final Sound guardianRunSound;
     public final Sound huskAttackSound;
     public final Sound enemyDamageSound;
+    public final Sound achivementPopUp;
     public final Sound[] zoteTalkingSounds;
     public final Sound[] zoteMumbleSounds;
 
@@ -73,6 +74,7 @@ public class AudioManager {
         this.guardianRunSound = Gdx.audio.newSound(Gdx.files.internal("voices/zombie_laser_miner_run.wav"));
         this.huskAttackSound = Gdx.audio.newSound(Gdx.files.internal("voices/zombie_laser_miner_run.wav"));
         this.enemyDamageSound = Gdx.audio.newSound(Gdx.files.internal("voices/enemy_damage.wav"));
+        this.achivementPopUp = Gdx.audio.newSound(Gdx.files.internal("voices/achievementPopup.wav"));
 
         this.zoteTalkingSounds = new Sound[]{
             Gdx.audio.newSound(Gdx.files.internal("voices/Zote_01.wav")),

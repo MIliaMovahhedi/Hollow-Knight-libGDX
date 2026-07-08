@@ -2,6 +2,7 @@ package Main.core.model.knight;
 
 import Main.core.controller.GameController;
 import Main.core.controller.manager.AudioManager;
+import Main.core.model.GameState;
 import Main.core.model.LevelModel;
 import Main.core.model.charm.Charm;
 import Main.core.model.charm.CharmManager;
@@ -212,6 +213,8 @@ public class KnightModel implements CharmObserver {
         }
     }
     private void handleDeath() {
+
+        GameState.getInstance().getGameStats().incrementPlayerDeaths();
 
         currentHealth = maxHealth;
         this.x = 100.0;

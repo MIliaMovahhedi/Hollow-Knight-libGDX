@@ -25,6 +25,7 @@ public class MainMenuScreen extends MenuScreen {
 
     @Override
     public void show() {
+
         super.show();
         AudioManager.getInstance().playMusic(AudioManager.getInstance().menuMusic, true);
     }
