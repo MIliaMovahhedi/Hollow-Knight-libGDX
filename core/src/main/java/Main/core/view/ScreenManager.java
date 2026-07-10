@@ -48,6 +48,7 @@ public class ScreenManager {
             case INVENTORY_MENU ->     new InventoryMenuScreen();
             case ACHIEVEMENTS_MENU ->     new AchievementsMenuScreen();
             case GAME_MENU -> new GameScreen();
+            case END_GAME -> new EndGameScreen();
         };
     }
 

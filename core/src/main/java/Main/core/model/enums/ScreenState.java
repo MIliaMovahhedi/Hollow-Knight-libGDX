@@ -9,5 +9,6 @@ public enum ScreenState {
     ACHIEVEMENTS_MENU,
     PAUSE_MENU,
     INVENTORY_MENU,
-    GAME_MENU
+    GAME_MENU,
+    END_GAME
 }

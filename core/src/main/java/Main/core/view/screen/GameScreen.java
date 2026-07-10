@@ -326,6 +326,12 @@ public class GameScreen extends MenuScreen {
 
     private void updateGameLogic(float deltaSeconds) {
 
+        if (GameState.getInstance().getGameStats().isGameCompleted()) {
+
+            GameState.getInstance().setScreen(ScreenState.END_GAME);
+            return;
+        }
+
         GameState.getInstance().getGameStats().addPlayTime(deltaSeconds);
         Main.core.model.achievement.AchievementManager.getInstance().evaluateAchievements(GameState.getInstance().getGameStats());
 
