@@ -33,6 +33,8 @@ public class FalseKnightRenderer {
     private final Animation<TextureRegion> deathFallAnim;
     private final Animation<TextureRegion> deathLandAnim;
 
+    private final Animation<TextureRegion> shockwaveAnim;
+
     private float stateTime = 0.0f;
     private Class<? extends EnemyState> previousStateClass = null;
 
@@ -60,6 +62,8 @@ public class FalseKnightRenderer {
 
         deathFallAnim = new Animation<>(0.1f, atlas.findRegions("DeathFall"), Animation.PlayMode.NORMAL);
         deathLandAnim = new Animation<>(0.1f, atlas.findRegions("DeathLand"), Animation.PlayMode.NORMAL);
+
+        shockwaveAnim = new Animation<>(0.08f, atlas.findRegions("Shockwave Spurt"), Animation.PlayMode.LOOP);
     }
 
     public void render(SpriteBatch batch, FalseKnightModel boss, float deltaTime) {
@@ -96,6 +100,29 @@ public class FalseKnightRenderer {
             float renderY = (float) boss.getY();
 
             batch.draw(currentFrame, renderX, renderY, renderWidth, renderHeight);
+        }
+
+        for (Main.core.model.enemy.boss.BossShockWave wave : boss.getActiveShockWaves()) {
+
+            if (wave.isActive()) {
+                TextureRegion waveFrame = shockwaveAnim.getKeyFrame(stateTime);
+
+                boolean waveGoingRight = wave.getBounds().x > boss.getX();
+                if (waveFrame.isFlipX() != waveGoingRight) {
+                    waveFrame.flip(true, false);
+                }
+
+                float scaleX = wave.getBounds().width / waveFrame.getRegionWidth();
+                float scaleY = wave.getBounds().height / waveFrame.getRegionHeight();
+
+                batch.draw(
+                    waveFrame,
+                    wave.getBounds().x - (waveFrame.getRegionWidth() * 0.25f),
+                    wave.getBounds().y,
+                    waveFrame.getRegionWidth() * 1.5f,
+                    waveFrame.getRegionHeight() * 1.5f
+                );
+            }
         }
     }
 

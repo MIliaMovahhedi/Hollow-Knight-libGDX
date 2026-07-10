@@ -67,7 +67,7 @@ public class FalseKnightModel extends EnemyModel {
         while (it.hasNext()) {
 
             BossShockWave wave = it.next();
-            wave.update(deltaTime);
+            wave.update(deltaTime, levelModel);
 
             if (!wave.isActive()) {
                 it.remove();

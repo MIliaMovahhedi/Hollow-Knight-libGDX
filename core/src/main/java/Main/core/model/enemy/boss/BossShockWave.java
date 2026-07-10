@@ -1,5 +1,6 @@
 package Main.core.model.enemy.boss;
 
+import Main.core.model.LevelModel;
 import com.badlogic.gdx.math.Rectangle;
 
 public class BossShockWave {
@@ -25,7 +26,7 @@ public class BossShockWave {
         this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
     }
 
-    public void update(double deltaTime) {
+    public void update(double deltaTime, LevelModel  levelModel) {
 
         lifeTimer += deltaTime;
         if (lifeTimer >= maxLifeTime) {
@@ -39,6 +40,24 @@ public class BossShockWave {
         x += velocityX * deltaTime;
 
         bounds.setX((float) x);
+
+        float probeSize = 5.0f;
+        float probeX = isFacingRight ?
+            (float) (x + width) :
+            (float) (x - probeSize);
+        float probeY = (float) y + 2.0f;
+        float probeHeight = (float) height - 4.0f;
+
+        Rectangle wallProbe = new Rectangle(probeX, probeY, probeSize, probeHeight);
+
+        for (Rectangle wall : levelModel.getGroundBounds()) {
+
+            if (wallProbe.overlaps(wall)) {
+
+                active = false;
+                break;
+            }
+        }
     }
 
     public boolean isActive() { return active; }

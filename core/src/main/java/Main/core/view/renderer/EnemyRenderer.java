@@ -60,6 +60,8 @@ public class EnemyRenderer {
     private final Animation<TextureRegion> guardianTurn;
     private final Animation<TextureRegion> guardianDeathAir;
     private final Animation<TextureRegion> guardianDeathLand;
+    private final TextureRegion laserBeamRegion;
+    private final Animation<TextureRegion> laserOrbAnim;
 
     public EnemyRenderer(TextureAtlas crawlidAtlas, TextureAtlas mossflyAtlas, TextureAtlas huskAtlas, TextureAtlas guardianAtlas) {
         this.viewDataMap = new HashMap<>();
@@ -91,6 +93,8 @@ public class EnemyRenderer {
         guardianTurn = new Animation<>(0.08f, guardianAtlas.findRegions("Turn"), Animation.PlayMode.NORMAL);
         guardianDeathAir = new Animation<>(0.1f, guardianAtlas.findRegions("Death Air"), Animation.PlayMode.LOOP);
         guardianDeathLand = new Animation<>(0.1f, guardianAtlas.findRegions("Death Land"), Animation.PlayMode.NORMAL);
+        laserBeamRegion = guardianAtlas.findRegion("laserBeam");
+        laserOrbAnim = new Animation<>(0.05f, guardianAtlas.findRegions("LaserCircle"), Animation.PlayMode.LOOP);
     }
 
     public void render(SpriteBatch batch, LevelModel levelModel, float deltaTime) {
@@ -141,6 +145,47 @@ public class EnemyRenderer {
                     regionWidth,
                     regionHeight
                 );
+            }
+
+            if (enemy instanceof CrystalGuardianModel) {
+                CrystalGuardianModel guardian = (CrystalGuardianModel) enemy;
+                com.badlogic.gdx.math.Rectangle laser = guardian.getActiveLaserBounds();
+
+                if (laser != null) {
+
+                    EnemyViewData vData = viewDataMap.get(enemy);
+                    float progress = Math.min((vData.stateTime - 0.6f) / 0.4f, 1.0f);
+                    if(progress < 0) progress = 0;
+
+                    float thicknessScale = (float) Math.sin(progress * Math.PI);
+
+                    float beamY = laser.y;
+                    batch.draw(
+                        laserBeamRegion,
+                        laser.x, beamY,
+                        0, laserBeamRegion.getRegionHeight() / 2f,
+                        laser.width, laserBeamRegion.getRegionHeight(),
+                        1.0f, thicknessScale,
+                        0
+                    );
+
+
+                    TextureRegion orbFrame = laserOrbAnim.getKeyFrame(vData.stateTime);
+                    float orbX = guardian.isFacingRight() ?
+                        (float)(guardian.getX() + guardian.getWidth() - 20) :
+                        (float)(guardian.getX() - orbFrame.getRegionWidth() + 20);
+
+                    float orbY = laser.y - (orbFrame.getRegionHeight() / 2f) + (laserBeamRegion.getRegionHeight() / 2f);
+
+                    batch.draw(
+                        orbFrame,
+                        orbX, orbY,
+                        orbFrame.getRegionWidth() / 2f, orbFrame.getRegionHeight() / 2f,
+                        orbFrame.getRegionWidth(), orbFrame.getRegionHeight(),
+                        thicknessScale * 1.5f, thicknessScale * 1.5f,
+                        0
+                    );
+                }
             }
         }
 
