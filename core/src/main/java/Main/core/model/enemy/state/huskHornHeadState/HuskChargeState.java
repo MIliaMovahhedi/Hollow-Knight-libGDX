@@ -47,6 +47,8 @@ public class HuskChargeState implements EnemyState {
             if (timer >= ANTICIPATE_DURATION) {
                 isCharging = true;
                 timer = 0.0;
+
+                enemy.activateDynamicHitbox(enemy.getWidth() * 1.6, enemy.getHeight() * 0.65);
             }
         }
         else {
@@ -65,5 +67,7 @@ public class HuskChargeState implements EnemyState {
 
         enemy.setXVelocity(0);
         AudioManager.getInstance().stopSfx(AudioManager.getInstance().huskAttackSound);
+
+        enemy.deactivateDynamicHitbox();
     }
 }

@@ -75,15 +75,18 @@ public class MaceSlamState implements EnemyState {
 
     private void generateSlamHitbox(EnemyModel enemy) {
 
+        float dynamicSlamRange = slamRange * 1.3f;
+        float slamHeight = (float) enemy.getHeight() * 0.25f;
+
         float hitX = enemy.isFacingRight() ?
             (float) (enemy.getX() + enemy.getWidth()) :
-            (float) (enemy.getX() - slamRange);
+            (float) (enemy.getX() - dynamicSlamRange);
 
         Rectangle slamHitbox = new Rectangle(
             hitX,
             (float) enemy.getY(),
-            slamRange,
-            (float) enemy.getHeight()
+            dynamicSlamRange,
+            slamHeight
         );
 
         if (enemy instanceof FalseKnightModel) {

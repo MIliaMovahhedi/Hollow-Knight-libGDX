@@ -17,6 +17,11 @@ public abstract class EnemyModel {
     protected double width;
     protected double height;
 
+    protected boolean isDynamicHitboxActive = false;
+    protected double dynamicWidth;
+    protected double dynamicHeight;
+    protected Rectangle dynamicBounds = new Rectangle();
+
     protected double xVelocity;
     protected double yVelocity;
 
@@ -68,6 +73,16 @@ public abstract class EnemyModel {
             this.deathTimer += deltaTime;
         }
     }
+
+    public void activateDynamicHitbox(double newWidth, double newHeight) {
+        this.dynamicWidth = newWidth;
+        this.dynamicHeight = newHeight;
+        this.isDynamicHitboxActive = true;
+    }
+    public void deactivateDynamicHitbox() {
+        this.isDynamicHitboxActive = false;
+    }
+
     public boolean canBeRemoved() {
         return isDead() && deathTimer >= DESPAWN_DURATION;
     }
@@ -89,7 +104,19 @@ public abstract class EnemyModel {
     public boolean isGrounded() {
         return isGrounded;
     }
-    public Rectangle getBounds() { return bounds; }
+    public Rectangle getBounds() {
+
+        if (isDynamicHitboxActive) {
+
+            float hitX = isFacingRight ?
+                (float) x :
+                (float) (x - (dynamicWidth - width));
+
+            dynamicBounds.set(hitX, (float) y, (float) dynamicWidth, (float) dynamicHeight);
+            return dynamicBounds;
+        }
+        return bounds;
+    }
     public double getX() { return x; }
     public double getY() { return y; }
     public double getWidth() { return width; }
