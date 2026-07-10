@@ -11,7 +11,7 @@ public class HuskChargeState implements EnemyState {
     private double timer = 0.0;
     private final double ANTICIPATE_DURATION = 0.4;
     private final double CHARGE_DURATION = 1.0;
-    private final double CHARGE_SPEED = 350.0;
+    private final double CHARGE_SPEED = 550.0;
     private boolean isCharging = false;
 
     private long runSoundId;

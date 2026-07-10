@@ -10,8 +10,8 @@ public class MossflyChargeState implements EnemyState {
 
     private final double targetX;
     private final double targetY;
-    private final double CHARGE_SPEED = 200.0;
-    private final double ARRIVAL_THRESHOLD = 10.0;
+    private final double CHARGE_SPEED = 300.0;
+    private final double ARRIVAL_THRESHOLD = 5.0;
 
     private long chargeSoundId;
     private final float MAX_HEARING_DISTANCE = 800.0f;

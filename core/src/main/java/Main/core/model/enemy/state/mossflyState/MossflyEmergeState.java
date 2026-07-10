@@ -11,7 +11,7 @@ public class MossflyEmergeState implements EnemyState {
 
     private double emergeTimer = 0.0;
     private final double EMERGE_DURATION = 0.8;
-    private final double EMERGE_SPEED_Y = 200.0;
+    private final double EMERGE_SPEED_Y = 300.0;
 
     @Override
     public void enter(EnemyModel enemy) {

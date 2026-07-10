@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class MossflyHiddenState implements EnemyState {
 
-    private final float TRIGGER_RANGE = 350.0f;
+    private final float TRIGGER_RANGE = 450.0f;
 
     @Override
     public void enter(EnemyModel enemy) {

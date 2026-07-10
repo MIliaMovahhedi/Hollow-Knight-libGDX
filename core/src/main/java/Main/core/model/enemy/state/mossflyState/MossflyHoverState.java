@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class MossflyHoverState implements EnemyState {
 
-    private final float SIGHT_RANGE = 350.0f;
+    private final float SIGHT_RANGE = 450.0f;
 
     private long chargeSoundId;
     private final float MAX_HEARING_DISTANCE = 800.0f;
