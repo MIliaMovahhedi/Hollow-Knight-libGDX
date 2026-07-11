@@ -60,7 +60,9 @@ public class LevelModel {
             }
         }
 
-        zote.update((float) deltaTime, knight);
+        if (zote != null) {
+            zote.update((float) deltaTime, knight);
+        }
     }
 
     public ZoteModel getZote() {

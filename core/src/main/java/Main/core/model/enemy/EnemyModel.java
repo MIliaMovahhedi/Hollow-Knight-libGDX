@@ -47,6 +47,8 @@ public abstract class EnemyModel {
         this.damageAmount = damageAmount;
         this.isFacingRight = false;
         this.bounds = new Rectangle((float) x, (float) y, (float) width, (float) height);
+
+        this.distanceToPlayer = 10000.0f;
     }
 
     public abstract void update(double deltaTime, KnightModel knightModel, LevelModel levelModel);
@@ -57,8 +59,13 @@ public abstract class EnemyModel {
 
             this.currentState.exit(this);
         }
+
         this.currentState = newState;
-        this.currentState.enter(this);
+
+        if (this.currentState != null) {
+
+            this.currentState.enter(this);
+        }
     }
 
     public void applyGravity(double gravity, double deltaTime) {

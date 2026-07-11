@@ -1,5 +1,6 @@
 package Main.core.view.renderer;
 
+import Main.core.model.enemy.boss.BossShockWave;
 import Main.core.model.enemy.boss.FalseKnightModel;
 import Main.core.model.enemy.boss.state.*;
 import Main.core.model.enemy.state.EnemyState;
@@ -50,7 +51,7 @@ public class FalseKnightRenderer {
         runAnticAnim = new Animation<>(0.1f, atlas.findRegions("Run Antic"), Animation.PlayMode.NORMAL);
         runAnim = new Animation<>(0.08f, atlas.findRegions("Run"), Animation.PlayMode.LOOP);
 
-        jumpAnticAnim = new Animation<>(0.1f, atlas.findRegions("Jump Antic"), Animation.PlayMode.NORMAL);
+        jumpAnticAnim = new Animation<>(0.1f, atlas.findRegions("Jump"), Animation.PlayMode.NORMAL);
         jumpAnim = new Animation<>(0.1f, atlas.findRegions("Jump"), Animation.PlayMode.LOOP);
         landAnim = new Animation<>(0.1f, atlas.findRegions("Land"), Animation.PlayMode.NORMAL);
 
@@ -58,7 +59,7 @@ public class FalseKnightRenderer {
         jumpAttackHitAnim = new Animation<>(0.1f, atlas.findRegions("Jump Attack Hit"), Animation.PlayMode.NORMAL);
 
         stunRecoverAnim = new Animation<>(0.15f, atlas.findRegions("Stun Recover"), Animation.PlayMode.NORMAL);
-        stunHitAnim = new Animation<>(0.07f, atlas.findRegions("Stun Hit"), Animation.PlayMode.NORMAL);
+        stunHitAnim = new Animation<>(0.07f, atlas.findRegions("DeathHit"), Animation.PlayMode.NORMAL);
 
         deathFallAnim = new Animation<>(0.1f, atlas.findRegions("DeathFall"), Animation.PlayMode.NORMAL);
         deathLandAnim = new Animation<>(0.1f, atlas.findRegions("DeathLand"), Animation.PlayMode.NORMAL);
@@ -92,24 +93,27 @@ public class FalseKnightRenderer {
                 currentFrame.flip(true, false);
             }
 
-            float scale = 1.5f;
+            float scale = 1f;
             float renderWidth = currentFrame.getRegionWidth() * scale;
             float renderHeight = currentFrame.getRegionHeight() * scale;
 
+            float regionWidth = currentFrame.getRegionWidth();
+            float regionHeight = currentFrame.getRegionHeight();
+
             float renderX = (float) boss.getX() - (renderWidth - (float) boss.getWidth()) / 2.0f;
-            float renderY = (float) boss.getY();
+            float renderY = (float) boss.getY() - 40;
 
             batch.draw(currentFrame, renderX, renderY, renderWidth, renderHeight);
         }
 
-        for (Main.core.model.enemy.boss.BossShockWave wave : boss.getActiveShockWaves()) {
+        for (BossShockWave wave : boss.getActiveShockWaves()) {
 
             if (wave.isActive()) {
                 TextureRegion waveFrame = shockwaveAnim.getKeyFrame(stateTime);
 
                 boolean waveGoingRight = wave.getBounds().x > boss.getX();
                 if (waveFrame.isFlipX() != waveGoingRight) {
-                    waveFrame.flip(true, false);
+                    waveFrame.flip(false, false);
                 }
 
                 float scaleX = wave.getBounds().width / waveFrame.getRegionWidth();

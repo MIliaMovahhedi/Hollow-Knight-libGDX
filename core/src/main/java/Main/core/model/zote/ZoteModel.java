@@ -35,6 +35,7 @@ public class ZoteModel {
         this.interactionBounds = new Rectangle();
         this.dialogueIndex = 0;
         this.isPreceptMode = false;
+        this.distanceToPlayer = 10000.0f;
         changeState(new ZoteIdleState());
         updateInteractionBounds();
     }

@@ -5,6 +5,7 @@ import Main.core.controller.manager.AudioManager;
 import Main.core.model.GameState;
 import Main.core.model.achievement.AchievementManager;
 import Main.core.model.enemy.*;
+import Main.core.model.enemy.boss.FalseKnightModel;
 import Main.core.model.enums.ScreenState;
 import Main.core.model.knight.KnightModel;
 import Main.core.model.LevelModel;
@@ -36,6 +37,12 @@ public class GameScreen extends MenuScreen {
     private ShapeRenderer shapeRenderer;
     private BitmapFont gameFont;
 
+    private final String MAP_CROSSROADS = "maps/Forgotten-Crossroad-Map.tmx";
+    private final String MAP_GREENPATH = "maps/Green-Path-Map.tmx";
+    private final String MAP_BOSS_ROOM = "maps/Boss-Room-Map.tmx";
+    private String[] maps;
+    private int currentMapIndex = 0;
+
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private OrthographicCamera camera;
@@ -43,6 +50,7 @@ public class GameScreen extends MenuScreen {
 
     private GameController controller;
     private KnightModel knightModel;
+    private FalseKnightModel falseKnightModel;
 
     private KnightRenderer knightRenderer;
     private HUDRenderer hudRenderer;
@@ -98,10 +106,9 @@ public class GameScreen extends MenuScreen {
         fixedFrameRate = 120;
         fixedDeltaTime = (double) 1 / fixedFrameRate;
 
-        AudioManager.getInstance().playMusic(AudioManager.getInstance().crossroadsMusic, true);
-        map = new TmxMapLoader().load("maps/Forgotten-Crossroad-Map.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(map);
-        levelModel = new LevelModel();
+        maps = new String[]{MAP_CROSSROADS, MAP_GREENPATH, MAP_BOSS_ROOM};
+        currentMapIndex = 0;
+        loadLevel(currentMapIndex);
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
@@ -109,15 +116,6 @@ public class GameScreen extends MenuScreen {
 
 
         loadCollisionLayer();
-
-        MapLayer spawnLayer = map.getLayers().get("Spawn");
-
-        MapObject spawnObject = spawnLayer.getObjects().get("PlayerSpawn");
-
-        float startX = spawnObject.getProperties().get("x", Float.class);
-        float startY = spawnObject.getProperties().get("y", Float.class);
-
-        this.knightModel = new KnightModel(startX, startY);
 
         spriteBatch = new SpriteBatch();
 
@@ -139,11 +137,69 @@ public class GameScreen extends MenuScreen {
         zoteAtlas = new TextureAtlas(Gdx.files.internal("animations/npc_atlas/zote.atlas"));
         zoteRenderer = new ZoteRenderer(zoteAtlas);
 
-//        falseKnightAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/falseKnight.atlas"));
-//        falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
+        falseKnightAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/falseKnight.atlas"));
+        falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
 
         achievementPopupManager = new AchievementPopupManager();
         AchievementManager.getInstance().addObserver(achievementPopupManager);
+    }
+
+    public void loadLevel(int index) {
+
+        if (levelModel != null) {
+            if (levelModel.getZote() != null && levelModel.getZote().getCurrentState() != null) {
+                levelModel.getZote().getCurrentState().exit(levelModel.getZote());
+            }
+            for (EnemyModel enemy : levelModel.getEnemies()) {
+                if (enemy.getCurrentState() != null) {
+                    enemy.getCurrentState().exit(enemy);
+                }
+            }
+        }
+
+        if (map != null) map.dispose();
+        if (mapRenderer != null) mapRenderer.dispose();
+
+        map = new TmxMapLoader().load(maps[index]);
+        mapRenderer = new OrthogonalTiledMapRenderer(map);
+        levelModel = new LevelModel();
+
+        if (map != null)
+            map.dispose();
+
+        if (mapRenderer != null)
+            mapRenderer.dispose();
+
+        map = new TmxMapLoader().load(maps[index]);
+        mapRenderer = new OrthogonalTiledMapRenderer(map);
+        levelModel = new LevelModel();
+
+        loadCollisionLayer();
+
+        MapLayer spawnLayer = map.getLayers().get("Spawn");
+        MapObject playerSpawn = spawnLayer.getObjects().get("PlayerSpawn");
+        float startX = playerSpawn.getProperties().get("x", Float.class);
+        float startY = playerSpawn.getProperties().get("y", Float.class);
+
+        this.knightModel = new KnightModel(startX, startY);
+
+        MapObject bossSpawnObj = spawnLayer.getObjects().get("bossSpawn");
+        if (bossSpawnObj != null) {
+            float bx = bossSpawnObj.getProperties().get("x", Float.class);
+            float by = bossSpawnObj.getProperties().get("y", Float.class);
+            this.falseKnightModel = new FalseKnightModel(bx, by);
+            levelModel.addEnemy(this.falseKnightModel);
+        }
+        else {
+            this.falseKnightModel = null;
+        }
+
+        if (index == 1) {
+            AudioManager.getInstance().playMusic(AudioManager.getInstance().greenpathMusic, true);
+        } else {
+
+            AudioManager.getInstance().playMusic(AudioManager.getInstance().crossroadsMusic, true);
+        }
     }
 
     public KnightModel getKnightModel() {
@@ -238,7 +294,12 @@ public class GameScreen extends MenuScreen {
 
         if (!isPaused) {
 
-            boolean isZoteTalking = levelModel.getZote().getCurrentState() instanceof ZoteTalkingState;
+            boolean isZoteTalking = false;
+
+            if (levelModel.getZote() != null) {
+
+                isZoteTalking = levelModel.getZote().getCurrentState() instanceof ZoteTalkingState;
+            }
 
             if (!isZoteTalking) {
 
@@ -261,7 +322,7 @@ public class GameScreen extends MenuScreen {
     private void updateCamera(float deltaSeconds) {
 
         float targetX = (float) knightModel.getX() + (float) (knightModel.getWidth() / 2);
-        float targetY = (float) knightModel.getY() + (float) (knightModel.getHeight() / 2);
+        float targetY = (float) knightModel.getY() + (float) (knightModel.getHeight() / 2) + 200;
 
         float lerpSpeed = 5.0f;
         float lerpFactor = Math.min(lerpSpeed * deltaSeconds, 1.0f);
@@ -320,7 +381,10 @@ public class GameScreen extends MenuScreen {
         }
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
 
-            levelModel.getZote().interact();
+            if (levelModel.getZote() != null) {
+
+                levelModel.getZote().interact();
+            }
         }
     }
 
@@ -338,6 +402,7 @@ public class GameScreen extends MenuScreen {
         accumulator += deltaSeconds;
 
         while (accumulator >= fixedDeltaTime) {
+
             accumulator -= fixedDeltaTime;
             knightModel.update(controller, levelModel, fixedDeltaTime);
             levelModel.updateEnemies(fixedDeltaTime, knightModel);
@@ -356,11 +421,21 @@ public class GameScreen extends MenuScreen {
 
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
+
         knightRenderer.render(spriteBatch, deltaSeconds);
         enemyRenderer.render(spriteBatch, levelModel, deltaSeconds);
+
+        if (falseKnightModel != null) {
+            falseKnightRenderer.render(spriteBatch, falseKnightModel, deltaSeconds);
+        }
+
         spellRenderer.render(spriteBatch, deltaSeconds);
-        zoteRenderer.render(spriteBatch, levelModel.getZote(), deltaSeconds);
-        dialogueRenderer.render(spriteBatch, levelModel.getZote(), deltaSeconds, camera);
+
+        if (levelModel.getZote() != null) {
+            zoteRenderer.render(spriteBatch, levelModel.getZote(), deltaSeconds);
+            dialogueRenderer.render(spriteBatch, levelModel.getZote(), deltaSeconds, camera);
+        }
+
         spriteBatch.end();
 
         hudRenderer.render(spriteBatch, deltaSeconds);
@@ -369,5 +444,18 @@ public class GameScreen extends MenuScreen {
 
     public void resetGameSession() {
         this.knightModel = null;
+
+        if (levelModel != null) {
+
+            if (levelModel.getZote() != null && levelModel.getZote().getCurrentState() != null) {
+                levelModel.getZote().getCurrentState().exit(levelModel.getZote());
+            }
+            for (EnemyModel enemy : levelModel.getEnemies()) {
+                if (enemy.getCurrentState() != null) {
+                    enemy.getCurrentState().exit(enemy);
+                }
+            }
+        }
+        AudioManager.getInstance().stopAll();
     }
 }

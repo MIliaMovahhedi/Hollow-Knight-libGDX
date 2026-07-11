@@ -31,7 +31,7 @@ public class FalseKnightModel extends EnemyModel {
 
     public FalseKnightModel(double startX, double startY) {
 
-        super(startX, startY, 180, 220, 200.0, 2.0);
+        super(startX, startY, 180, 220, 80.0, 2.0);
         this.random = new Random();
         this.currentState = null;
     }
@@ -123,7 +123,10 @@ public class FalseKnightModel extends EnemyModel {
     }
     private EnemyState evaluateNextMove(KnightModel knightModel) {
 
-        double distanceToPlayer = Math.abs(this.x - knightModel.getX());
+        double bossCenterX = this.x + (this.width / 2.0);
+        double playerCenterX = knightModel.getX() + (knightModel.getWidth() / 2.0);
+        double distanceToPlayer = Math.abs(bossCenterX - playerCenterX);
+
         NavigableMap<Double, EnemyState> roulette = new TreeMap<>();
         double totalWeight = 0.0;
 
@@ -134,7 +137,7 @@ public class FalseKnightModel extends EnemyModel {
         }
 
 
-        if (distanceToPlayer < 200.0) {
+        if (distanceToPlayer < 400.0) {
 
             if (lastAttackClass != MaceSlamState.class || sameAttackCount < 2) {
 
