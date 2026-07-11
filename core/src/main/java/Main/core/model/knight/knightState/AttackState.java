@@ -17,6 +17,7 @@ public class AttackState implements KnightState{
     public void enter(KnightModel knight) {
 
         timer = 0.0;
+        knight.startAttackCooldown();
         AudioManager.getInstance().playSfx(AudioManager.getInstance().jumpSound);
     }
 

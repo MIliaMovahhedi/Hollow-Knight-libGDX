@@ -34,6 +34,10 @@ public class KnightModel implements CharmObserver {
     private boolean isOnHurt;
     Rectangle attackHitbox;
 
+    private boolean isGodMode = false;
+    private boolean isNoclip = false;
+    private boolean hasEmergencyHeal = false;
+
     private double maxHealth;
     private double currentHealth;
     private int currentSoul;
@@ -48,6 +52,7 @@ public class KnightModel implements CharmObserver {
     private boolean canDoubleJump;
     private boolean canDash = true;
     private boolean isFacingRight = true;
+    private boolean canSlash = true;
 
     private final double GRAVITY = -900.0;
     private final double MAX_SPEED = 300.0;
@@ -65,13 +70,16 @@ public class KnightModel implements CharmObserver {
     private final double baseAttackDuration = 0.25;
     private final double baseFocusDuration = 1.5;
     private final double baseDashCooldown = 0.6;
+    private final double baseAttackCooldown = 0.6;
 
     private int currentSoulPerHit;
     private double currentAttackDuration;
     private double currentFocusDuration;
     private double currentDashCooldown;
+    private double currentAttackCooldown;
 
     private double dashCooldownTimer;
+    private double attackCooldownTimer;
 
     private CharmManager charmManager;
 
@@ -150,6 +158,7 @@ public class KnightModel implements CharmObserver {
     }
 
     public boolean canDash() { return canDash && dashCooldownTimer <= 0; }
+    public boolean canSlash() { return attackCooldownTimer <= 0; }
     public void setCanDash(boolean canDash) {
         this.canDash = canDash;
     }
@@ -157,6 +166,11 @@ public class KnightModel implements CharmObserver {
 
         dashCooldownTimer = currentDashCooldown;
         canDash = false;
+    }
+    public void startAttackCooldown() {
+
+        attackCooldownTimer = currentAttackCooldown;
+        canSlash = false;
     }
 
     public double getDashDuration() {
@@ -193,7 +207,7 @@ public class KnightModel implements CharmObserver {
 
     private boolean takeDamage(double incomingDamage) {
 
-        if (isInvincible) return true;
+        if (isInvincible || isGodMode) return true;
 
         isOnHurt = true;
 
@@ -202,6 +216,12 @@ public class KnightModel implements CharmObserver {
         currentHealth -= incomingDamage;
         if (currentHealth <= 0) {
 
+            if (hasEmergencyHeal) {
+                currentHealth = 1;
+                hasEmergencyHeal = false;
+                isInvincible = true;
+                invincibilityTimer = invincibilityDuration;
+            }
             handleDeath();
             return false;
         }
@@ -245,7 +265,7 @@ public class KnightModel implements CharmObserver {
             AudioManager.getInstance().playScaledSfx(AudioManager.getInstance().soulCollectSound, 0.3f);
         }
 
-        currentSoul = Math.min(currentSoul + SOUL_PER_HIT, MAX_SOUL);
+        currentSoul = Math.min(currentSoul + currentSoulPerHit , MAX_SOUL);
     }
     public boolean consumeSoul() {
 
@@ -291,8 +311,40 @@ public class KnightModel implements CharmObserver {
 
             dashCooldownTimer -= deltaTime;
         }
+        if (attackCooldownTimer > 0) {
 
-        if (gameController.isOnAttack() && !(this.knightState instanceof AttackState)) {
+            attackCooldownTimer -= deltaTime;
+        }
+
+        if (isNoclip) {
+
+            if (!(this.knightState instanceof IdleState)) {
+                setKnightState(new IdleState());
+            }
+
+            if (gameController.isOnLeftMove()) { xVelocity = -MAX_SPEED * 2; isFacingRight = false; }
+            else if (gameController.isOnRightMove()) { xVelocity = MAX_SPEED * 2; isFacingRight = true; }
+            else xVelocity = 0;
+
+            if (gameController.isOnUpMove()) yVelocity = MAX_SPEED * 2;
+            else if (gameController.isOnDownMove()) yVelocity = -MAX_SPEED * 2;
+            else yVelocity = 0;
+
+            this.x += xVelocity * deltaTime;
+            this.y += yVelocity * deltaTime;
+            bounds.setX((float) x);
+            bounds.setY((float) y);
+
+            Iterator<Spell> iterator = activeSpells.iterator();
+            while (iterator.hasNext()) {
+                Spell spell = iterator.next();
+                spell.update(deltaTime, levelModel);
+                if (!spell.isActive()) iterator.remove();
+            }
+            return;
+        }
+
+        if (gameController.isOnAttack() && !(this.knightState instanceof AttackState) && canSlash()) {
 
             isDown = gameController.isOnDownMove() && !isGrounded;
 
@@ -617,6 +669,7 @@ public class KnightModel implements CharmObserver {
         currentSoulPerHit = baseSoulPerHit;
         damageAmount = baseDamageAmount;
         currentAttackDuration = baseAttackDuration;
+        currentAttackCooldown = baseAttackCooldown;
         currentFocusDuration = baseFocusDuration;
         currentDashCooldown = baseDashCooldown;
 
@@ -626,7 +679,10 @@ public class KnightModel implements CharmObserver {
 
                 case SOUL_CATCHER -> currentSoulPerHit += 3;
                 case UNBREAKABLE_STRENGTH -> damageAmount *= 1.5;
-                case QUICK_SLASH -> currentAttackDuration *= 0.6;
+                case QUICK_SLASH -> {
+                    currentAttackDuration *= 0.6;
+                    currentAttackCooldown *= 0.5;
+                }
                 case QUICK_FOCUS -> currentFocusDuration *= 0.6;
                 case DASHMASTER -> currentDashCooldown *= 0.5;
             }
@@ -638,5 +694,23 @@ public class KnightModel implements CharmObserver {
 
     public CharmManager getCharmManager() {
         return charmManager;
+    }
+
+    public boolean isGodMode() { return isGodMode; }
+    public void setGodMode(boolean godMode) { this.isGodMode = godMode; }
+    public boolean isNoclip() { return isNoclip; }
+    public void setNoclip(boolean noclip) { this.isNoclip = noclip; }
+    public void setCurrentHealth(double health) { this.currentHealth = health; }
+    public void setCurrentSoul(int soul) { this.currentSoul = Math.min(soul, MAX_SOUL); }
+    public boolean hasEmergencyHeal() { return hasEmergencyHeal; }
+    public void setHasEmergencyHeal(boolean val) { this.hasEmergencyHeal = val; }
+
+    public void teleport(double newX, double newY) {
+        this.x = newX;
+        this.y = newY;
+        this.xVelocity = 0;
+        this.yVelocity = 0;
+        this.bounds.setX((float) newX);
+        this.bounds.setY((float) newY);
     }
 }

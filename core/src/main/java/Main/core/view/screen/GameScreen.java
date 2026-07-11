@@ -1,5 +1,6 @@
 package Main.core.view.screen;
 
+import Main.core.controller.CheatController;
 import Main.core.controller.GameController;
 import Main.core.controller.manager.AudioManager;
 import Main.core.model.GameState;
@@ -49,6 +50,7 @@ public class GameScreen extends MenuScreen {
     private LevelModel levelModel;
 
     private GameController controller;
+    private CheatController cheatController;
     private KnightModel knightModel;
     private FalseKnightModel falseKnightModel;
 
@@ -84,6 +86,7 @@ public class GameScreen extends MenuScreen {
 
     public GameScreen() {
         this.controller = new GameController();
+        this.cheatController = new CheatController();
     }
 
     @Override
@@ -181,7 +184,13 @@ public class GameScreen extends MenuScreen {
         float startX = playerSpawn.getProperties().get("x", Float.class);
         float startY = playerSpawn.getProperties().get("y", Float.class);
 
-        this.knightModel = new KnightModel(startX, startY);
+        if (this.knightModel == null) {
+
+            this.knightModel = new KnightModel(startX, startY);
+        }
+        else {
+            this.knightModel.teleport(startX, startY);
+        }
 
         MapObject bossSpawnObj = spawnLayer.getObjects().get("bossSpawn");
         if (bossSpawnObj != null) {
@@ -394,6 +403,10 @@ public class GameScreen extends MenuScreen {
 
             GameState.getInstance().setScreen(ScreenState.END_GAME);
             return;
+        }
+
+        if (knightModel != null && levelModel != null) {
+            cheatController.update(knightModel, levelModel, this);
         }
 
         GameState.getInstance().getGameStats().addPlayTime(deltaSeconds);
