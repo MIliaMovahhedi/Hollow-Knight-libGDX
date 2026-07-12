@@ -10,7 +10,7 @@ public class ChargeState implements EnemyState {
     private double timer = 0.0;
     private final double windupDuration = 0.4;
     private final double chargeDuration = 1.2;
-    private final double chargeSpeed = 450.0;
+    private final double chargeSpeed = 600.0;
     private boolean isCharging = false;
 
     @Override

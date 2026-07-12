@@ -37,6 +37,8 @@ public class KnightRenderer {
     private final Animation<TextureRegion> downSlashVFXAnimation;
     private final Animation<TextureRegion> dashVFXAnimation;
 
+    private final Animation<TextureRegion> deathAnimation;
+
     private float stateTime;
     private KnightState previousState;
 
@@ -68,6 +70,8 @@ public class KnightRenderer {
         this.downSlashVFXAnimation = new Animation<>(0.02f, textureAtlas.findRegions("DownSlashEffect"), Animation.PlayMode.NORMAL);
         this.dashVFXAnimation = new Animation<>(0.02f, textureAtlas.findRegions("Dash Effect"), Animation.PlayMode.NORMAL);
 
+        this.deathAnimation = new Animation<>(0.1f, textureAtlas.findRegions("Death"), Animation.PlayMode.NORMAL);
+
         this.previousHealthTracker = (int) knightModel.getCurrentHealth();
         this.focusGetEffectTimer = -1.0f;
     }
@@ -97,7 +101,11 @@ public class KnightRenderer {
 
         KnightState currentState = knightModel.getKnightState();
 
-        if (currentState instanceof AttackState) {
+        if (currentState instanceof DeathState) {
+
+            return deathAnimation.getKeyFrame(stateTime);
+        }
+        else if (currentState instanceof AttackState) {
 
             float speedMultiplier = (float) (knightModel.getBaseAttackDuration() / knightModel.getAttackDuration());
 

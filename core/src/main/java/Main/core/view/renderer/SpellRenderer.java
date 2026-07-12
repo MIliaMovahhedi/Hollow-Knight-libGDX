@@ -20,15 +20,11 @@ public class SpellRenderer {
     private final Animation<TextureRegion> blastAnim;
 
     private float vengefulSpiritStateTime;
-    private float howlingWraithsStateTime;
-    private float blastStateTime;
 
     public SpellRenderer(KnightModel knightModel, TextureAtlas atlas) {
 
         this.knightModel = knightModel;
         this.vengefulSpiritStateTime = 0.0f;
-        this.howlingWraithsStateTime = 0.0f;
-        this.blastStateTime =  0.0f;
 
         this.vengefulSpiritAnim = new Animation<>(0.08f, atlas.findRegions("Vengeful Spirit"), Animation.PlayMode.LOOP);
         this.howlingWraithsAnim = new Animation<>(0.07f, atlas.findRegions("SoulScream"), Animation.PlayMode.NORMAL);
@@ -36,67 +32,55 @@ public class SpellRenderer {
     }
 
     public void render(SpriteBatch batch, float deltaTime) {
-
         List<Spell> activeSpells = knightModel.getActiveSpells();
-
         if (activeSpells == null || activeSpells.isEmpty()) {
-
             return;
         }
 
         vengefulSpiritStateTime += deltaTime;
-
         for (Spell spell : activeSpells) {
-
             if (spell instanceof VengefulSpirit) {
-
                 drawVengefulSpirit(batch, (VengefulSpirit) spell);
             }
             else if (spell instanceof HowlingWraiths) {
-
                 drawHowlingWraiths(batch, (HowlingWraiths) spell);
             }
         }
     }
 
     private void drawVengefulSpirit(SpriteBatch batch, VengefulSpirit spirit) {
-
-        TextureRegion currentFrame;
-
-        if (spirit.isExploding()) {
-
-            currentFrame = blastAnim.getKeyFrame((float) spirit.getExplodeTimer());
-        }
-        else {
-            currentFrame = vengefulSpiritAnim.getKeyFrame(vengefulSpiritStateTime);
-        }
-
         boolean shouldFaceLeft = !spirit.isFacingRight();
 
-        if (currentFrame.isFlipX() != shouldFaceLeft) {
-
-            currentFrame.flip(true, false);
+        if (!blastAnim.isAnimationFinished((float) spirit.getBlastTimer())) {
+            TextureRegion blastFrame = blastAnim.getKeyFrame((float) spirit.getBlastTimer());
+            if (blastFrame.isFlipX() != shouldFaceLeft) {
+                blastFrame.flip(true, false);
+            }
+            float blastWidth = spirit.getWidth() * 1.5f;
+            float blastHeight = spirit.getHeight() * 1.5f;
+            float blastX = (float) spirit.getStartX() - (blastWidth - spirit.getWidth()) / 2.0f;
+            float blastY = (float) spirit.getStartY() - (blastHeight - spirit.getHeight()) / 2.0f;
+            batch.draw(blastFrame, blastX, blastY, blastWidth, blastHeight);
         }
 
+        TextureRegion currentFrame = vengefulSpiritAnim.getKeyFrame(vengefulSpiritStateTime);
+        if (currentFrame.isFlipX() != shouldFaceLeft) {
+            currentFrame.flip(true, false);
+        }
         float renderWidth = spirit.getWidth() * 1.5f;
         float renderHeight = spirit.getHeight() * 1.5f;
-
         float renderX = (float) spirit.getX() - (renderWidth - spirit.getWidth()) / 2.0f;
         float renderY = (float) spirit.getY() - (renderHeight - spirit.getHeight()) / 2.0f;
-
         batch.draw(currentFrame, renderX, renderY, renderWidth, renderHeight);
     }
 
     private void drawHowlingWraiths(SpriteBatch batch, HowlingWraiths wraiths) {
 
         TextureRegion currentFrame = howlingWraithsAnim.getKeyFrame((float) wraiths.getTimer());
-
         float renderWidth = wraiths.getWidth() * 2.0f;
         float renderHeight = wraiths.getHeight() * 2.0f;
-
         float renderX = (float) wraiths.getX() - (renderWidth - wraiths.getWidth()) / 2.0f;
         float renderY = (float) wraiths.getY();
-
         batch.draw(currentFrame, renderX, renderY, renderWidth, renderHeight);
     }
 }
