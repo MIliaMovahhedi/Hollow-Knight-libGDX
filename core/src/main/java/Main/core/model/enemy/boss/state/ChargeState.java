@@ -2,6 +2,7 @@ package Main.core.model.enemy.boss.state;
 
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
+import Main.core.model.enemy.boss.FalseKnightModel;
 import Main.core.model.enemy.state.EnemyState;
 import Main.core.model.knight.KnightModel;
 
@@ -10,7 +11,7 @@ public class ChargeState implements EnemyState {
     private double timer = 0.0;
     private final double windupDuration = 0.4;
     private final double chargeDuration = 1.2;
-    private final double chargeSpeed = 600.0;
+    private double chargeSpeed;
     private boolean isCharging = false;
 
     @Override
@@ -19,6 +20,12 @@ public class ChargeState implements EnemyState {
         enemy.setXVelocity(0);
         timer = 0.0;
         isCharging = false;
+
+        if (enemy instanceof FalseKnightModel && ((FalseKnightModel) enemy).isPhaseTwo()) {
+            chargeSpeed = 900.0;
+        } else {
+            chargeSpeed = 600.0;
+        }
     }
 
     @Override

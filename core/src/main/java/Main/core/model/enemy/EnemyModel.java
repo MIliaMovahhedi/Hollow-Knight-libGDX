@@ -91,7 +91,7 @@ public abstract class EnemyModel {
     }
 
     public boolean canBeRemoved() {
-        return isDead() && deathTimer >= DESPAWN_DURATION;
+        return false;
     }
 
     public void takeDamage(double amount) {

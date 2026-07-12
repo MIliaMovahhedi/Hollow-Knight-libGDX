@@ -56,7 +56,7 @@ public class FalseKnightRenderer {
         landAnim = new Animation<>(0.1f, atlas.findRegions("Land"), Animation.PlayMode.NORMAL);
 
         jumpAttackAnim = new Animation<>(0.1f, atlas.findRegions("Jump Attack"), Animation.PlayMode.NORMAL);
-        jumpAttackHitAnim = new Animation<>(0.1f, atlas.findRegions("Jump Attack Hit"), Animation.PlayMode.NORMAL);
+        jumpAttackHitAnim = new Animation<>(0.5f, atlas.findRegions("Jump Attack Hit"), Animation.PlayMode.NORMAL);
 
         stunRecoverAnim = new Animation<>(0.15f, atlas.findRegions("Stun Recover"), Animation.PlayMode.NORMAL);
         stunHitAnim = new Animation<>(0.07f, atlas.findRegions("DeathHit"), Animation.PlayMode.NORMAL);
@@ -82,7 +82,9 @@ public class FalseKnightRenderer {
             previousStateClass = currentState.getClass();
         }
 
-        stateTime += deltaTime;
+        float timeMultiplier = boss.isPhaseTwo() ? 1.5f : 1.0f;
+        stateTime += (deltaTime * timeMultiplier);
+
         TextureRegion currentFrame = determineFrame(boss, currentState);
 
         if (currentFrame != null) {

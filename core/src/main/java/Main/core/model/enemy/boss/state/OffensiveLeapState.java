@@ -2,6 +2,7 @@ package Main.core.model.enemy.boss.state;
 
 import Main.core.model.LevelModel;
 import Main.core.model.enemy.EnemyModel;
+import Main.core.model.enemy.boss.FalseKnightModel;
 import Main.core.model.enemy.state.EnemyState;
 import Main.core.model.knight.KnightModel;
 
@@ -9,13 +10,22 @@ public class OffensiveLeapState implements EnemyState {
 
     private boolean hasJumped = false;
     private final double jumpSpeedY = 650.0;
-    private final double jumpSpeedX = 350.0;
+    private double jumpSpeedX;
 
     @Override
     public void enter(EnemyModel enemy) {
 
         enemy.setXVelocity(0);
         hasJumped = false;
+
+        if (enemy instanceof FalseKnightModel && ((FalseKnightModel) enemy).isPhaseTwo()) {
+
+            jumpSpeedX = 550.0;
+        }
+        else {
+
+            jumpSpeedX = 350.0;
+        }
     }
 
     @Override

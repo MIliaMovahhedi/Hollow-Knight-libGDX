@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.Rectangle;
 public class MaceSlamState implements EnemyState {
 
     private double timer = 0.0;
-    private final double windupDuration = 0.6;
-    private final double activeDuration = 0.2;
-    private final double recoveryDuration = 0.5;
+    private double windupDuration;
+    private double activeDuration;
+    private double recoveryDuration;
     private final float slamRange = 150.0f;
     private boolean strikeActive = false;
 
@@ -22,9 +22,22 @@ public class MaceSlamState implements EnemyState {
         enemy.setXVelocity(0);
         timer = 0.0;
         strikeActive = false;
+
         if (enemy instanceof FalseKnightModel) {
 
             ((FalseKnightModel) enemy).setActiveWeaponBounds(null);
+            if (((FalseKnightModel) enemy).isPhaseTwo()) {
+
+                windupDuration = 0.4;
+                activeDuration = 0.15;
+                recoveryDuration = 0.3;
+            }
+            else {
+
+                windupDuration = 0.6;
+                activeDuration = 0.2;
+                recoveryDuration = 0.5;
+            }
         }
     }
 

@@ -14,6 +14,7 @@ public class LevelModel {
     private List<Rectangle> groundBounds;
     private List<Rectangle> hazardBounds;
     private List<EnemyModel> enemies;
+    private List<TransitionDoor> transitionDoors;
     private ZoteModel zote;
 
     public LevelModel() {
@@ -21,6 +22,7 @@ public class LevelModel {
         this.groundBounds = new ArrayList<>();
         this.hazardBounds = new ArrayList<>();
         this.enemies = new ArrayList<>();
+        this.transitionDoors = new ArrayList<>();
     }
 
     public void addGroundBound(Rectangle bound) {
@@ -32,6 +34,7 @@ public class LevelModel {
     public void addEnemy(EnemyModel enemy) {
         enemies.add(enemy);
     }
+    public void addTransitionDoor(TransitionDoor door) { transitionDoors.add(door); }
     public void addZote(ZoteModel zote) {
         this.zote = zote;
     }
@@ -45,6 +48,7 @@ public class LevelModel {
     public List<EnemyModel> getEnemies() {
         return enemies;
     }
+    public List<TransitionDoor> getTransitionDoors() { return transitionDoors; }
 
     public void updateEnemies(double deltaTime, KnightModel knight) {
 

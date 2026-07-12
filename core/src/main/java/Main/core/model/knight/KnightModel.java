@@ -22,8 +22,10 @@ public class KnightModel implements CharmObserver {
 
     private double x;
     private double y;
-    private final double startX;
-    private final double startY;
+
+    private double startX;
+    private double startY;
+
     private double lastSafeX;
     private double lastSafeY;
     private double xVelocity;
@@ -560,9 +562,17 @@ public class KnightModel implements CharmObserver {
     public void teleport(double newX, double newY) {
         this.x = newX;
         this.y = newY;
+
+        this.startX = newX;
+        this.startY = newY;
+
         this.xVelocity = 0;
         this.yVelocity = 0;
         this.bounds.setX((float) newX);
         this.bounds.setY((float) newY);
+    }
+
+    public Rectangle getBounds() {
+        return  bounds;
     }
 }

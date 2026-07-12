@@ -11,7 +11,7 @@ public class ShockWaveLandingState implements EnemyState {
     private boolean hasJumped = false;
     private boolean hasLanded = false;
     private double recoveryTimer = 0.0;
-    private final double RECOVERY_TIME = 0.5;
+    private double RECOVERY_TIME = 0.5;
     private final double jumpSpeedY = 750.0;
 
     @Override
@@ -21,6 +21,15 @@ public class ShockWaveLandingState implements EnemyState {
         hasJumped = false;
         hasLanded = false;
         recoveryTimer = 0.0;
+
+        if (enemy instanceof FalseKnightModel && ((FalseKnightModel) enemy).isPhaseTwo()) {
+
+            RECOVERY_TIME = 0.3;
+        }
+        else {
+
+            RECOVERY_TIME = 0.5;
+        }
     }
 
     @Override

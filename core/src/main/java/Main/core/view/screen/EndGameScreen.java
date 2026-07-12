@@ -1,8 +1,11 @@
 package Main.core.view.screen;
 
 import Main.core.controller.EndGameController;
+import Main.core.controller.StartGameController;
 import Main.core.model.GameState;
 import Main.core.model.GameStats;
+import Main.core.model.achievement.AchievementManager;
+import Main.core.view.renderer.AchievementPopupManager;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -13,19 +16,41 @@ public class EndGameScreen extends MenuScreen {
 
     private final EndGameController controller;
     private TextButton mainMenuButton;
+    private TextButton restartButton;
+    private AchievementPopupManager achievementPopupManager;
 
     public EndGameScreen() {
         super();
         controller = new EndGameController();
+        achievementPopupManager = new AchievementPopupManager();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+
+        AchievementManager.getInstance().addObserver(achievementPopupManager);
+
+        AchievementManager.getInstance().evaluateAchievements(GameState.getInstance().getGameStats());
     }
 
     @Override
     protected void addButtonsAndListeners() {
         mainMenuButton = new TextButton("Return to Menu", skin);
+        restartButton = new TextButton("Restart Game", skin);
+
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 controller.returnToMainMenu();
+            }
+        });
+
+        restartButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                StartGameController startController = new StartGameController();
+                startController.startNewGame(GameState.getInstance().getCurrentSlotIndex());
             }
         });
     }
@@ -33,11 +58,10 @@ public class EndGameScreen extends MenuScreen {
     @Override
     protected void createTableLayout() {
         table.setFillParent(true);
-        table.setBackground(skin.getDrawable("main_bg"));
+        table.setBackground(skin.getDrawable("main_menu_bg"));
         table.center();
 
         GameStats stats = GameState.getInstance().getGameStats();
-
         String headerText = stats.isFalseKnightDefeated() ? "VICTORY" : "GAME OVER";
         Label headerLabel = new Label(headerText, skin, "title");
         headerLabel.setFontScale(1.5f);
@@ -48,7 +72,8 @@ public class EndGameScreen extends MenuScreen {
         addStatRow("Total Kills:", String.valueOf(stats.getTotalKills()));
         addStatRow("Total Deaths:", String.valueOf(stats.getPlayerDeaths()));
 
-        table.add(mainMenuButton).colspan(2).padTop(70).center();
+        table.add(restartButton).padTop(70).center().padRight(20);
+        table.add(mainMenuButton).padTop(70).center();
 
         stage.addActor(table);
     }
@@ -69,9 +94,42 @@ public class EndGameScreen extends MenuScreen {
     }
 
     @Override
+    public void render(float deltaSeconds) {
+        super.render(deltaSeconds);
+
+        if (achievementPopupManager != null) {
+            achievementPopupManager.render(deltaSeconds);
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        if (achievementPopupManager != null) {
+            achievementPopupManager.resize(width, height);
+        }
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+
+        AchievementManager.getInstance().removeObserver(achievementPopupManager);
+    }
+
+    @Override
+    public void dispose() {
+        if (achievementPopupManager != null) {
+            achievementPopupManager.dispose();
+        }
+        super.dispose();
+    }
+
+    @Override
     public void onLanguageChanged(I18NBundle bundle) {
         if (mainMenuButton != null && bundle != null) {
-            mainMenuButton.setText(bundle.get("menu.main"));
+            mainMenuButton.setText("Main Menu");
+            restartButton.setText("Restart Game");
         }
     }
 }

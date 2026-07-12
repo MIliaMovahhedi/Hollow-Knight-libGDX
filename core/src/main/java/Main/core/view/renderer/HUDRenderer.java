@@ -138,18 +138,24 @@ public class HUDRenderer {
     }
 
     private void drawSoulVessel(SpriteBatch batch, float baseDrawX, float baseDrawY, float deltaTime) {
+
         float vesselX = baseDrawX;
         float vesselY = baseDrawY;
+
         float targetFillPercentage = (float) knightModel.getCurrentSoul() / 99.0f;
         targetFillPercentage = Math.max(0.0f, min(1.0f, targetFillPercentage));
-        float lerpSpeed = 5.0f;
-        displayedSoulFill += (float) ((targetFillPercentage - displayedSoulFill) * min(1.0f, lerpSpeed * deltaTime));
-        float fillPercentage = (float) knightModel.getCurrentSoul() / 99.0f;
-        fillPercentage = Math.max(0.0f, min(1.0f, fillPercentage));
+
+        float lerpSpeed = 2.5f;
+        displayedSoulFill += (targetFillPercentage - displayedSoulFill) * min(1.0f, lerpSpeed * deltaTime);
+
+        float fillPercentage = Math.max(0.0f, min(1.0f, displayedSoulFill));
+
         if (fillPercentage > 0) {
+
             int totalHeight = soulOrbFull.getRegionHeight();
             int fillHeight = (int) (totalHeight * fillPercentage);
             int startY = totalHeight - fillHeight;
+
             TextureRegion croppedLiquid = new TextureRegion(
                 soulOrbFull,
                 0,

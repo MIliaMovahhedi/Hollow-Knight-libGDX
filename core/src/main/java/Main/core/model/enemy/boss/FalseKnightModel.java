@@ -267,4 +267,7 @@ public class FalseKnightModel extends EnemyModel {
     public boolean isHurt() {
         return hurtTimer > 0.0;
     }
+    public boolean isPhaseTwo() {
+        return isPhaseTwo;
+    }
 }

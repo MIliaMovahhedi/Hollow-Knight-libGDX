@@ -4,6 +4,7 @@ import Main.core.controller.CheatController;
 import Main.core.controller.GameController;
 import Main.core.controller.manager.AudioManager;
 import Main.core.model.GameState;
+import Main.core.model.TransitionDoor;
 import Main.core.model.achievement.AchievementManager;
 import Main.core.model.enemy.*;
 import Main.core.model.enemy.boss.FalseKnightModel;
@@ -41,6 +42,7 @@ public class GameScreen extends MenuScreen {
     private final String MAP_CROSSROADS = "maps/Forgotten-Crossroad-Map.tmx";
     private final String MAP_GREENPATH = "maps/Green-Path-Map.tmx";
     private final String MAP_BOSS_ROOM = "maps/Boss-Room-Map.tmx";
+
     private String[] maps;
     private int[] backgroundLayers;
     private int[] foregroundLayers;
@@ -50,12 +52,10 @@ public class GameScreen extends MenuScreen {
     private OrthogonalTiledMapRenderer mapRenderer;
     private OrthographicCamera camera;
     private LevelModel levelModel;
-
     private GameController controller;
     private CheatController cheatController;
     private KnightModel knightModel;
     private FalseKnightModel falseKnightModel;
-
     private KnightRenderer knightRenderer;
     private HUDRenderer hudRenderer;
     private SpellRenderer spellRenderer;
@@ -63,7 +63,6 @@ public class GameScreen extends MenuScreen {
     private DialogueRenderer dialogueRenderer;
     private ZoteRenderer zoteRenderer;
     private FalseKnightRenderer falseKnightRenderer;
-
     private TextureAtlas knightAtlas;
     private TextureAtlas hudAtlas;
     private TextureAtlas effectsAtlas;
@@ -73,18 +72,14 @@ public class GameScreen extends MenuScreen {
     private TextureAtlas guardianAtlas;
     private TextureAtlas zoteAtlas;
     private TextureAtlas falseKnightAtlas;
-
     private SpriteBatch spriteBatch;
 
     private int fixedFrameRate;
     private double fixedDeltaTime;
     private double accumulator;
-
     private boolean isPaused = false;
-
     private FitViewport viewport;
     private AchievementPopupManager achievementPopupManager;
-
 
     public GameScreen() {
         this.controller = new GameController();
@@ -93,7 +88,6 @@ public class GameScreen extends MenuScreen {
 
     @Override
     public void show() {
-
         isPaused = false;
         super.show();
         if (knightModel != null) {
@@ -122,7 +116,6 @@ public class GameScreen extends MenuScreen {
         loadLevel(currentMapIndex);
 
         if (data != null) {
-
             knightModel.teleport(data.getKnightX(), data.getKnightY());
             knightModel.setCurrentHealth(data.getCurrentHealth());
             knightModel.setCurrentSoul(data.getCurrentSoul());
@@ -161,7 +154,6 @@ public class GameScreen extends MenuScreen {
         this.currentMapIndex = index;
 
         if (levelModel != null) {
-
             if (levelModel.getZote() != null && levelModel.getZote().getCurrentState() != null) {
                 levelModel.getZote().getCurrentState().exit(levelModel.getZote());
             }
@@ -174,7 +166,6 @@ public class GameScreen extends MenuScreen {
 
         if (map != null)
             map.dispose();
-
         if (mapRenderer != null)
             mapRenderer.dispose();
 
@@ -184,28 +175,21 @@ public class GameScreen extends MenuScreen {
 
         java.util.List<Integer> bgList = new java.util.ArrayList<>();
         java.util.List<Integer> fgList = new java.util.ArrayList<>();
-
         for (int i = 0; i < map.getLayers().getCount(); i++) {
-
             com.badlogic.gdx.maps.MapLayer layer = map.getLayers().get(i);
             String name = layer.getName().toLowerCase();
-
             if (name.contains("front")) {
                 fgList.add(i);
             } else {
                 bgList.add(i);
             }
         }
-
         backgroundLayers = new int[bgList.size()];
         for (int i = 0; i < bgList.size(); i++) {
-
             backgroundLayers[i] = bgList.get(i);
         }
-
         foregroundLayers = new int[fgList.size()];
         for (int i = 0; i < fgList.size(); i++) {
-
             foregroundLayers[i] = fgList.get(i);
         }
 
@@ -217,7 +201,6 @@ public class GameScreen extends MenuScreen {
         float startY = playerSpawn.getProperties().get("y", Float.class);
 
         if (this.knightModel == null) {
-
             this.knightModel = new KnightModel(startX, startY);
         }
         else {
@@ -235,89 +218,86 @@ public class GameScreen extends MenuScreen {
             this.falseKnightModel = null;
         }
 
-        if (index == 1 || index == 2) {
-
-            AudioManager.getInstance().playMusic(AudioManager.getInstance().greenpathMusic, true);
+        float fadeDuration = 1.5f;
+        if (index == 2) {
+            AudioManager.getInstance().crossfadeMusic(AudioManager.getInstance().bossFightMusic, fadeDuration, true);
+        }
+        else if (index == 1) {
+            AudioManager.getInstance().crossfadeMusic(AudioManager.getInstance().greenpathMusic, fadeDuration, true);
         }
         else {
-
-            AudioManager.getInstance().playMusic(AudioManager.getInstance().crossroadsMusic, true);
+            AudioManager.getInstance().crossfadeMusic(AudioManager.getInstance().crossroadsMusic, fadeDuration, true);
         }
     }
 
     public KnightModel getKnightModel() {
         return knightModel;
     }
+
     private void loadCollisionLayer() {
-
         if (map.getLayers().get("Ground") != null) {
-
             for (MapObject object : map.getLayers().get("Ground").getObjects()) {
-
                 if (object instanceof RectangleMapObject) {
-
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
                     levelModel.addGroundBound(new Rectangle(rect.x, rect.y, rect.width, rect.height));
                 }
             }
         }
-
         if (map.getLayers().get("Hazard") != null) {
-
             for (MapObject object : map.getLayers().get("Hazard").getObjects()) {
-
                 if (object instanceof RectangleMapObject) {
-
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
                     levelModel.addHazardBound(new Rectangle(rect.x, rect.y, rect.width, rect.height));
                 }
             }
         }
-
         if (map.getLayers().get("Enemies") != null) {
-
             for (MapObject object : map.getLayers().get("Enemies").getObjects()) {
-
                 float spawnX = object.getProperties().get("x", Float.class);
                 float spawnY = object.getProperties().get("y", Float.class);
                 String enemyType = object.getName();
-
                 if (enemyType == null) continue;
 
                 EnemyModel enemy = switch (enemyType) {
-
                     case "Crawlid" -> new CrawlidModel(spawnX, spawnY);
                     case "Mossfly" -> new MossflyModel(spawnX, spawnY);
                     case "Husk" -> new HuskHornHeadModel(spawnX, spawnY);
                     case "Guardian" -> new CrystalGuardianModel(spawnX, spawnY);
                     default -> null;
                 };
-
                 if (enemy != null) {
-
                     levelModel.addEnemy(enemy);
                 }
             }
         }
-
         if (map.getLayers().get("Zote") != null) {
-
             for (MapObject object : map.getLayers().get("Zote").getObjects()) {
-
                 float spawnX = object.getProperties().get("x", Float.class);
                 float spawnY = object.getProperties().get("y", Float.class);
-
                 levelModel.addZote(new ZoteModel(spawnX, spawnY));
+            }
+        }
+        if (map.getLayers().get("Transitions") != null) {
+
+            for (MapObject object : map.getLayers().get("Transitions").getObjects()) {
+
+                if (object instanceof RectangleMapObject) {
+
+                    Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                    Integer targetMapIndex = object.getProperties().get("targetMapIndex", Integer.class);
+
+                    if (targetMapIndex != null) {
+                        levelModel.addTransitionDoor(new TransitionDoor(rect, targetMapIndex));
+                    }
+                }
             }
         }
     }
 
     @Override
     public void resize(int width, int height) {
-
         super.resize(width, height);
         viewport.update(width, height, true);
-
         if (achievementPopupManager != null) {
             achievementPopupManager.resize(width, height);
         }
@@ -325,31 +305,23 @@ public class GameScreen extends MenuScreen {
 
     @Override
     public void onLanguageChanged(I18NBundle bundle) {
-
     }
 
     @Override
     public void render(float deltaSeconds) {
-
         AudioManager.getInstance().update(deltaSeconds);
-
         handleMenuInputs();
 
         if (!isPaused) {
-
             boolean isZoteTalking = false;
-
             if (levelModel.getZote() != null) {
-
                 isZoteTalking = levelModel.getZote().getCurrentState() instanceof ZoteTalkingState;
             }
 
             if (!isZoteTalking) {
-
                 controller.update();
             }
             else {
-
                 knightModel.setXVelocity(0);
             }
 
@@ -357,18 +329,17 @@ public class GameScreen extends MenuScreen {
             renderGameGraphics(deltaSeconds);
         }
         else {
-
             renderGameGraphics(0);
         }
     }
 
     private void updateCamera(float deltaSeconds) {
-
         float targetX = (float) knightModel.getX() + (float) (knightModel.getWidth() / 2);
         float targetY = (float) knightModel.getY() + (float) (knightModel.getHeight() / 2) + 200;
 
         float lerpSpeed = 5.0f;
         float lerpFactor = Math.min(lerpSpeed * deltaSeconds, 1.0f);
+
         camera.position.x += (targetX - camera.position.x) * lerpFactor;
         camera.position.y += (targetY - camera.position.y) * lerpFactor;
 
@@ -423,19 +394,15 @@ public class GameScreen extends MenuScreen {
             ScreenManager.getInstance().navigateTo(ScreenState.PAUSE_MENU);
         }
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
-
             if (levelModel.getZote() != null) {
-
                 levelModel.getZote().interact();
             }
         }
     }
 
     private void updateGameLogic(float deltaSeconds) {
-
         if (GameState.getInstance().getGameStats().isGameCompleted()) {
-
-            GameState.getInstance().setScreen(ScreenState.END_GAME);
+            ScreenManager.getInstance().navigateTo(ScreenState.END_GAME);
             return;
         }
 
@@ -447,19 +414,25 @@ public class GameScreen extends MenuScreen {
         Main.core.model.achievement.AchievementManager.getInstance().evaluateAchievements(GameState.getInstance().getGameStats());
 
         accumulator += deltaSeconds;
-
         while (accumulator >= fixedDeltaTime) {
-
             accumulator -= fixedDeltaTime;
             knightModel.update(controller, levelModel, fixedDeltaTime);
             levelModel.updateEnemies(fixedDeltaTime, knightModel);
+        }
+
+        for (TransitionDoor door : levelModel.getTransitionDoors()) {
+
+            if (knightModel.getBounds().overlaps(door.getBounds())) {
+
+                loadLevel(door.getTargetMapIndex());
+                break;
+            }
         }
 
         updateCamera(deltaSeconds);
     }
 
     public void renderGameGraphics(float deltaSeconds) {
-
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT);
 
@@ -484,7 +457,6 @@ public class GameScreen extends MenuScreen {
         }
 
         spriteBatch.end();
-
         mapRenderer.render(foregroundLayers);
 
         hudRenderer.render(spriteBatch, deltaSeconds);
@@ -493,7 +465,6 @@ public class GameScreen extends MenuScreen {
 
     public void resetGameSession() {
         this.knightModel = null;
-
         if (levelModel != null) {
 
             if (levelModel.getZote() != null && levelModel.getZote().getCurrentState() != null) {
