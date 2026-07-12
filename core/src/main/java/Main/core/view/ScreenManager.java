@@ -1,6 +1,5 @@
 package Main.core.view;
 
-import Main.core.controller.MainMenuController;
 import Main.core.model.enums.ScreenState;
 import Main.core.view.screen.*;
 import com.badlogic.gdx.Game;
@@ -42,7 +41,7 @@ public class ScreenManager {
 
             case MAIN_MENU ->  new MainMenuScreen();
             case SETTINGS_MENU ->   new SettingsMenuScreen();
-            case START_GAME_MENU ->   new StartGameMenuScreen();
+            case START_GAME_MENU ->   new LoadGameScreen();
             case GUIDE_MENU ->    new GuideMenuScreen();
             case PAUSE_MENU ->     new PauseMenuScreen();
             case INVENTORY_MENU ->     new InventoryMenuScreen();

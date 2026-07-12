@@ -42,6 +42,8 @@ public class GameScreen extends MenuScreen {
     private final String MAP_GREENPATH = "maps/Green-Path-Map.tmx";
     private final String MAP_BOSS_ROOM = "maps/Boss-Room-Map.tmx";
     private String[] maps;
+    private int[] backgroundLayers;
+    private int[] foregroundLayers;
     private int currentMapIndex = 0;
 
     private TiledMap map;
@@ -93,63 +95,73 @@ public class GameScreen extends MenuScreen {
     public void show() {
 
         isPaused = false;
-
         super.show();
-
         if (knightModel != null) {
             return;
         }
 
         shapeRenderer = new ShapeRenderer();
-
         gameFont = new BitmapFont(Gdx.files.internal("ui/trajan.fnt"));
         dialogueRenderer = new DialogueRenderer(gameFont);
-
         accumulator = 0;
         fixedFrameRate = 120;
         fixedDeltaTime = (double) 1 / fixedFrameRate;
-
         maps = new String[]{MAP_CROSSROADS, MAP_GREENPATH, MAP_BOSS_ROOM};
-        currentMapIndex = 0;
+
+        int slot = GameState.getInstance().getCurrentSlotIndex();
+        Main.core.model.SaveData data = Main.core.controller.manager.SaveManager.getInstance().loadGame(slot);
+
+        if (data != null) {
+            currentMapIndex = data.getMapIndex();
+            GameState.getInstance().setGameStats(data.getGameStats());
+        } else {
+            currentMapIndex = 0;
+            GameState.getInstance().resetGameStats();
+        }
+
         loadLevel(currentMapIndex);
+
+        if (data != null) {
+
+            knightModel.teleport(data.getKnightX(), data.getKnightY());
+            knightModel.setCurrentHealth(data.getCurrentHealth());
+            knightModel.setCurrentSoul(data.getCurrentSoul());
+            for (Main.core.model.charm.Charm charm : data.getEquippedCharms()) {
+                knightModel.getCharmManager().equipCharm(charm);
+            }
+        }
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
         viewport.apply();
 
-
-        loadCollisionLayer();
-
         spriteBatch = new SpriteBatch();
-
         knightAtlas = new TextureAtlas(Gdx.files.internal("animations/knight_atlas/knight.atlas"));
         knightRenderer = new KnightRenderer(knightModel, knightAtlas);
-
         hudAtlas = new TextureAtlas(Gdx.files.internal("animations/HUD_atlas/hud.atlas"));
         hudRenderer = new HUDRenderer(knightModel, hudAtlas);
-
         effectsAtlas = new TextureAtlas(Gdx.files.internal("animations/effects_atlas/effects.atlas"));
         spellRenderer = new SpellRenderer(knightModel, effectsAtlas);
-
         crawlidAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/crawlid.atlas"));
         mossflyAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/mossfly.atlas"));
         huskAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/husk.atlas"));
         guardianAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/guardian.atlas"));
         enemyRenderer = new EnemyRenderer(crawlidAtlas, mossflyAtlas, huskAtlas, guardianAtlas);
-
         zoteAtlas = new TextureAtlas(Gdx.files.internal("animations/npc_atlas/zote.atlas"));
         zoteRenderer = new ZoteRenderer(zoteAtlas);
-
         falseKnightAtlas = new TextureAtlas(Gdx.files.internal("animations/enemies_atlas/falseKnight.atlas"));
         falseKnightRenderer = new FalseKnightRenderer(falseKnightAtlas);
 
         achievementPopupManager = new AchievementPopupManager();
-        AchievementManager.getInstance().addObserver(achievementPopupManager);
+        Main.core.model.achievement.AchievementManager.getInstance().addObserver(achievementPopupManager);
     }
 
     public void loadLevel(int index) {
 
+        this.currentMapIndex = index;
+
         if (levelModel != null) {
+
             if (levelModel.getZote() != null && levelModel.getZote().getCurrentState() != null) {
                 levelModel.getZote().getCurrentState().exit(levelModel.getZote());
             }
@@ -160,13 +172,6 @@ public class GameScreen extends MenuScreen {
             }
         }
 
-        if (map != null) map.dispose();
-        if (mapRenderer != null) mapRenderer.dispose();
-
-        map = new TmxMapLoader().load(maps[index]);
-        mapRenderer = new OrthogonalTiledMapRenderer(map);
-        levelModel = new LevelModel();
-
         if (map != null)
             map.dispose();
 
@@ -176,6 +181,33 @@ public class GameScreen extends MenuScreen {
         map = new TmxMapLoader().load(maps[index]);
         mapRenderer = new OrthogonalTiledMapRenderer(map);
         levelModel = new LevelModel();
+
+        java.util.List<Integer> bgList = new java.util.ArrayList<>();
+        java.util.List<Integer> fgList = new java.util.ArrayList<>();
+
+        for (int i = 0; i < map.getLayers().getCount(); i++) {
+
+            com.badlogic.gdx.maps.MapLayer layer = map.getLayers().get(i);
+            String name = layer.getName().toLowerCase();
+
+            if (name.contains("front")) {
+                fgList.add(i);
+            } else {
+                bgList.add(i);
+            }
+        }
+
+        backgroundLayers = new int[bgList.size()];
+        for (int i = 0; i < bgList.size(); i++) {
+
+            backgroundLayers[i] = bgList.get(i);
+        }
+
+        foregroundLayers = new int[fgList.size()];
+        for (int i = 0; i < fgList.size(); i++) {
+
+            foregroundLayers[i] = fgList.get(i);
+        }
 
         loadCollisionLayer();
 
@@ -203,9 +235,11 @@ public class GameScreen extends MenuScreen {
             this.falseKnightModel = null;
         }
 
-        if (index == 1) {
+        if (index == 1 || index == 2) {
+
             AudioManager.getInstance().playMusic(AudioManager.getInstance().greenpathMusic, true);
-        } else {
+        }
+        else {
 
             AudioManager.getInstance().playMusic(AudioManager.getInstance().crossroadsMusic, true);
         }
@@ -228,9 +262,9 @@ public class GameScreen extends MenuScreen {
             }
         }
 
-        if (map.getLayers().get("Hazards") != null) {
+        if (map.getLayers().get("Hazard") != null) {
 
-            for (MapObject object : map.getLayers().get("Hazards").getObjects()) {
+            for (MapObject object : map.getLayers().get("Hazard").getObjects()) {
 
                 if (object instanceof RectangleMapObject) {
 
@@ -430,7 +464,7 @@ public class GameScreen extends MenuScreen {
         Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT);
 
         mapRenderer.setView(camera);
-        mapRenderer.render();
+        mapRenderer.render(backgroundLayers);
 
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
@@ -451,6 +485,8 @@ public class GameScreen extends MenuScreen {
 
         spriteBatch.end();
 
+        mapRenderer.render(foregroundLayers);
+
         hudRenderer.render(spriteBatch, deltaSeconds);
         achievementPopupManager.render(deltaSeconds);
     }
@@ -470,5 +506,9 @@ public class GameScreen extends MenuScreen {
             }
         }
         AudioManager.getInstance().stopAll();
+    }
+
+    public int getCurrentMapIndex() {
+        return currentMapIndex;
     }
 }

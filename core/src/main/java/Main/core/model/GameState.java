@@ -8,6 +8,7 @@ public class GameState {
     private static GameState instance;
     private ScreenState currentScreen = ScreenState.MAIN_MENU;
     private GameStats gameStats;
+    private int currentSlotIndex = 1;
 
     private GameState() {
         this.gameStats = new GameStats();
@@ -28,7 +29,19 @@ public class GameState {
         return gameStats;
     }
 
+    public void setGameStats(GameStats gameStats) {
+        this.gameStats = gameStats;
+    }
+
     public void resetGameStats() {
         this.gameStats = new GameStats();
+    }
+
+    public int getCurrentSlotIndex() {
+        return currentSlotIndex;
+    }
+
+    public void setCurrentSlotIndex(int currentSlotIndex) {
+        this.currentSlotIndex = currentSlotIndex;
     }
 }

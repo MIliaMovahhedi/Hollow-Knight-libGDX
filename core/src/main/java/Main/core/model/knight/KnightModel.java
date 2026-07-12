@@ -70,7 +70,7 @@ public class KnightModel implements CharmObserver {
     private final double baseAttackDuration = 0.25;
     private final double baseFocusDuration = 1.5;
     private final double baseDashCooldown = 0.6;
-    private final double baseAttackCooldown = 0.6;
+    private final double baseAttackCooldown = 0.3;
 
     private int currentSoulPerHit;
     private double currentAttackDuration;
@@ -210,23 +210,23 @@ public class KnightModel implements CharmObserver {
         if (isInvincible || isGodMode) return true;
 
         isOnHurt = true;
-
         AudioManager.getInstance().playSfx(AudioManager.getInstance().knightDamageSound);
-
         currentHealth -= incomingDamage;
-        if (currentHealth <= 0) {
 
+        if (currentHealth <= 0) {
             if (hasEmergencyHeal) {
                 currentHealth = 1;
                 hasEmergencyHeal = false;
                 isInvincible = true;
                 invincibilityTimer = invincibilityDuration;
+                return true;
             }
-            handleDeath();
-            return false;
+            else {
+                handleDeath();
+                return false;
+            }
         }
         else {
-
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
             return true;
@@ -237,8 +237,8 @@ public class KnightModel implements CharmObserver {
         GameState.getInstance().getGameStats().incrementPlayerDeaths();
 
         currentHealth = maxHealth;
-        this.x = 100.0;
-        this.y = 100.0;
+        this.x = startX;
+        this.y = startY;
         this.xVelocity = 0;
         this.yVelocity = 0;
         bounds.setX((float) x);

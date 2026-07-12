@@ -19,6 +19,7 @@ public class PauseMenuScreen extends MenuScreen {
     private TextButton resumeButton;
     private TextButton settingsButton;
     private TextButton mainMenuButton;
+    private TextButton saveAndQuitButton;
     private Label activeCheatsLabel;
 
     public PauseMenuScreen() {
@@ -27,7 +28,6 @@ public class PauseMenuScreen extends MenuScreen {
 
     @Override
     protected void createTableLayout() {
-
         table.setFillParent(true);
         table.center();
         stage.addActor(table);
@@ -38,20 +38,29 @@ public class PauseMenuScreen extends MenuScreen {
         resumeButton = new TextButton("Resume", skin);
         TextButton inventoryButton = new TextButton("Inventory", skin);
         settingsButton = new TextButton("Settings", skin);
+        saveAndQuitButton = new TextButton("Save & Quit", skin);
         mainMenuButton = new TextButton("Main Menu", skin);
 
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) { controller.resumeGame(); }
         });
+
         inventoryButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) { ScreenManager.getInstance().navigateTo(ScreenState.INVENTORY_MENU); }
         });
+
         settingsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) { controller.goToSettings(); }
         });
+
+        saveAndQuitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) { controller.saveAndQuitGame(); }
+        });
+
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) { controller.goToMainMenu(); }
@@ -61,6 +70,7 @@ public class PauseMenuScreen extends MenuScreen {
         leftColumn.add(resumeButton).spaceBottom(15).uniformX().row();
         leftColumn.add(inventoryButton).spaceBottom(15).uniformX().row();
         leftColumn.add(settingsButton).spaceBottom(15).uniformX().row();
+        leftColumn.add(saveAndQuitButton).spaceBottom(15).uniformX().row();
         leftColumn.add(mainMenuButton).spaceBottom(15).uniformX().row();
 
         Table rightColumn = new Table();
@@ -73,7 +83,7 @@ public class PauseMenuScreen extends MenuScreen {
                 "[ G ] : Toggle God Mode\n" +
                 "[ N ] : Toggle Noclip (Fly)\n" +
                 "[ H ] : Max Health & Soul\n" +
-                "[ E ] : Toggle Auto-Revive (Emergency Heal)\n" +
+                "[ E ] : Toggle Auto-Revive\n" +
                 "[ K ] : Kill All Enemies\n" +
                 "[ B ] : Teleport to Boss";
 
@@ -102,7 +112,6 @@ public class PauseMenuScreen extends MenuScreen {
         GameScreen gameScreen = (GameScreen) ScreenManager.getInstance().getCachedScreen(ScreenState.GAME_MENU);
         if (gameScreen != null) {
             gameScreen.renderGameGraphics(0);
-
             if (gameScreen.getKnightModel() != null) {
                 KnightModel knight = gameScreen.getKnightModel();
                 String cheats = "";
@@ -124,7 +133,6 @@ public class PauseMenuScreen extends MenuScreen {
 
     @Override
     public void onLanguageChanged(I18NBundle bundle) {
-
         if (resumeButton != null && bundle != null) {
             resumeButton.setText(bundle.get("menu.resume"));
             settingsButton.setText(bundle.get("menu.settings"));
