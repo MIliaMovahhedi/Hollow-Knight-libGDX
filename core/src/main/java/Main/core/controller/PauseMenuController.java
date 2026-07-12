@@ -7,6 +7,8 @@ import Main.core.model.enums.ScreenState;
 import Main.core.view.ScreenManager;
 import Main.core.view.screen.GameScreen;
 
+import java.util.ArrayList;
+
 public class PauseMenuController {
 
     public void resumeGame() {
@@ -43,6 +45,7 @@ public class PauseMenuController {
             saveData.setCurrentSoul(gameScreen.getKnightModel().getCurrentSoul());
             saveData.setEquippedCharms(gameScreen.getKnightModel().getCharmManager().getEquippedCharms());
             saveData.setGameStats(GameState.getInstance().getGameStats());
+            saveData.setUnlockedAchievements(new ArrayList<>(Main.core.model.achievement.AchievementManager.getInstance().getUnlockedAchievements()));
 
             int slot = GameState.getInstance().getCurrentSlotIndex();
             SaveManager.getInstance().saveGame(saveData, slot);

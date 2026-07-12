@@ -27,7 +27,7 @@ public class MainMenuScreen extends MenuScreen {
     public void show() {
 
         super.show();
-        AudioManager.getInstance().playMusic(AudioManager.getInstance().menuMusic, true);
+        AudioManager.getInstance().crossfadeMusic(AudioManager.getInstance().menuMusic, 1.5f, true);
     }
 
     @Override

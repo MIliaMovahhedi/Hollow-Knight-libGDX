@@ -34,6 +34,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import java.util.ArrayList;
+
 public class GameScreen extends MenuScreen {
 
     private ShapeRenderer shapeRenderer;
@@ -106,20 +108,29 @@ public class GameScreen extends MenuScreen {
         Main.core.model.SaveData data = Main.core.controller.manager.SaveManager.getInstance().loadGame(slot);
 
         if (data != null) {
+
             currentMapIndex = data.getMapIndex();
             GameState.getInstance().setGameStats(data.getGameStats());
-        } else {
+            AchievementManager.getInstance().loadAchievements(data.getUnlockedAchievements());
+        }
+
+        else {
+
             currentMapIndex = 0;
             GameState.getInstance().resetGameStats();
+            AchievementManager.getInstance().loadAchievements(new ArrayList<>());
         }
 
         loadLevel(currentMapIndex);
 
         if (data != null) {
+
             knightModel.teleport(data.getKnightX(), data.getKnightY());
             knightModel.setCurrentHealth(data.getCurrentHealth());
             knightModel.setCurrentSoul(data.getCurrentSoul());
+
             for (Main.core.model.charm.Charm charm : data.getEquippedCharms()) {
+
                 knightModel.getCharmManager().equipCharm(charm);
             }
         }
@@ -154,6 +165,7 @@ public class GameScreen extends MenuScreen {
         this.currentMapIndex = index;
 
         if (levelModel != null) {
+
             if (levelModel.getZote() != null && levelModel.getZote().getCurrentState() != null) {
                 levelModel.getZote().getCurrentState().exit(levelModel.getZote());
             }
@@ -201,9 +213,11 @@ public class GameScreen extends MenuScreen {
         float startY = playerSpawn.getProperties().get("y", Float.class);
 
         if (this.knightModel == null) {
+
             this.knightModel = new KnightModel(startX, startY);
         }
         else {
+
             this.knightModel.teleport(startX, startY);
         }
 

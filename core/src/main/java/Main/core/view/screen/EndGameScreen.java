@@ -2,6 +2,7 @@ package Main.core.view.screen;
 
 import Main.core.controller.EndGameController;
 import Main.core.controller.StartGameController;
+import Main.core.controller.manager.AudioManager;
 import Main.core.model.GameState;
 import Main.core.model.GameStats;
 import Main.core.model.achievement.AchievementManager;
@@ -29,8 +30,9 @@ public class EndGameScreen extends MenuScreen {
     public void show() {
         super.show();
 
-        AchievementManager.getInstance().addObserver(achievementPopupManager);
+        AudioManager.getInstance().crossfadeMusic(AudioManager.getInstance().winMusic, 1.5f, true);
 
+        AchievementManager.getInstance().addObserver(achievementPopupManager);
         AchievementManager.getInstance().evaluateAchievements(GameState.getInstance().getGameStats());
     }
 

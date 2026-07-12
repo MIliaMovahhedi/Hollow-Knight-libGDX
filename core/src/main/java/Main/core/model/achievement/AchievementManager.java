@@ -13,7 +13,7 @@ public class AchievementManager {
     private Set<Achievement> unlockedAchievements;
     private List<AchievementObserver> observers;
     private final float speedrunTimeLimit = 3600f;
-    private final int totalEnemyTypesCount = 5;
+    private final int totalEnemyTypesCount = 4;
 
     private AchievementManager() {
 
@@ -28,6 +28,15 @@ public class AchievementManager {
             instance = new AchievementManager();
         }
         return instance;
+    }
+
+    public void loadAchievements(List<Achievement> achievements) {
+
+        unlockedAchievements.clear();
+        if (achievements != null) {
+
+            unlockedAchievements.addAll(achievements);
+        }
     }
 
     public void addObserver(AchievementObserver observer) {

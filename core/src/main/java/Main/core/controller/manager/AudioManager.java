@@ -46,6 +46,7 @@ public class AudioManager {
     public final Music greenpathMusic;
     public final Music menuMusic;
     public final Music bossFightMusic;
+    public final Music winMusic;
 
     private float preMuteMusicVolume = 1.0f;
     private float preMuteSfxVolume = 1.0f;
@@ -96,6 +97,7 @@ public class AudioManager {
         this.greenpathMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/S5 Green Path Main.wav"));
         this.menuMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/Hollow Knight.mp3"));
         this.bossFightMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/False Knight.mp3"));
+        this.winMusic = Gdx.audio.newMusic(Gdx.files.internal("voices/Nic D - Gasoline.mp3"));
     }
 
     public static AudioManager getInstance() {
